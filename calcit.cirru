@@ -39,18 +39,19 @@
             object $ {} (:draw-mode :line-loop)
               :vertex-shader $ inline-shader |line.vert
               :fragment-shader $ inline-shader |line.frag
-              :points $ %{} %nested-attribute (:length nil) (:augment 3)
-                :data $ []
-                  &v+ (:p0 shape) ([] 0 2 0)
-                  &v+ (:p1 shape) ([] 0 2 0)
-                  &v+ (:p2 shape) ([] 0 2 0)
+              :points $ []
+                &v+ (:p0 shape) ([] 0 2 0)
+                &v+ (:p1 shape) ([] 0 2 0)
+                &v+ (:p2 shape) ([] 0 2 0)
           :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] 'app.schema/Shape
+            :return $ :: 'Map 'Tag 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
             app.config :refer $ inline-shader
             triadica.alias :refer $ object group
-            triadica.core :refer $ %nested-attribute
             triadica.comp.axis :refer $ comp-axis
             app.comp.landscape :refer $ comp-landscape
             triadica.comp.drag-point :refer $ comp-drag-point
@@ -73,14 +74,18 @@
                 upward @perspective/*viewer-upward
                 rightward $ v-cross forward upward
                 p0 $ &v+ viewer $ v-scale forward 200
-              {} (:p0 p0)
+              %{} Shape (:p0 p0)
                 :p1 $ &v+ p0 $ v-scale rightward 200
                 :p2 $ &v+
                   &v+ p0 $ v-scale upward 100
                   v-scale forward 20
                 :color-type color-type
                 :index $ get-index!
+                :id $ %none
+                :name $ %none
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'app.schema/Shape)
+            :args $ [] 'Number
         'color-types $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def color-types
             []
@@ -244,31 +249,51 @@
             respo-alerts.core :refer $ use-modal-menu use-modal
             triadica.perspective :as perspective
             triadica.vector :refer $ v-cross v-scale &v+
+            app.schema :refer $ Shape
     'app.comp.landscape $ %{} 'FileEntry
-      :defs $ {} $ 'comp-landscape
-        %{} 'CodeEntry (:doc |)
+      :defs $ {}
+        'comp-landscape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-landscape (shapes)
-            let
-                shapes-list $ .to-list $ .values shapes
-              object $ {} (:draw-mode :triangles)
-                :vertex-shader $ inline-shader |shape.vert
-                :fragment-shader $ inline-shader |shape.frag
-                :points $ %{} %nested-attribute (:length nil) (:augment 3)
-                  :data $ -> shapes-list $ map
-                    fn (info)
-                      [] (:p0 info) (:p1 info) (:p2 info)
-                :attributes $ {} $ :color_index
-                  %{} %nested-attribute (:length nil) (:augment 1)
-                    :data $ -> shapes-list $ map
-                      fn (info)
-                        repeat (:color-type info) 3
+            if (empty? shapes)
+              group $ {}
+              let
+                  shape-list $ .to-list $ .distinct-values shapes
+                object $ {} (:draw-mode :triangles)
+                  :vertex-shader $ inline-shader |shape.vert
+                  :fragment-shader $ inline-shader |shape.frag
+                  :points $ landscape-vertices shape-list
+                  :attributes $ {} $ :color_index (landscape-colors shape-list)
           :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] $ :: 'Map 'String 'app.schema/Shape
+            :return $ :: 'Map 'Tag 'Dynamic
+        'landscape-colors $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn landscape-colors (shape-list)
+            concat & $ map shape-list $ fn (shape)
+              repeat (:color-type shape) 3
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] $ :: 'List 'app.schema/Shape
+            :return $ :: 'List 'Number
+        'landscape-vertices $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn landscape-vertices (shape-list)
+            concat & $ map shape-list shape-vertices
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] $ :: 'List 'app.schema/Shape
+            :return $ :: 'List $ :: 'List 'Number
+        'shape-vertices $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn shape-vertices (shape)
+            [] (:p0 shape) (:p1 shape) (:p2 shape)
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] 'app.schema/Shape
+            :return $ :: 'List $ :: 'List 'Number
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.landscape
           :require
             app.config :refer $ inline-shader
-            triadica.alias :refer $ object
-            triadica.core :refer $ %nested-attribute
+            triadica.alias :refer $ object group
     'app.config $ %{} 'FileEntry
       :defs $ {} $ 'inline-shader
         %{} 'CodeEntry (:doc |)
@@ -355,18 +380,30 @@
             app.updater :refer $ updater
             |nanoid :refer $ nanoid
     'app.schema $ %{} 'FileEntry
-      :defs $ {} $ 'shape
-        %{} 'CodeEntry (:doc |)
+      :defs $ {}
+        'Shape $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct Shape
+            :p0 $ :: 'List 'Number
+            :p1 $ :: 'List 'Number
+            :p2 $ :: 'List 'Number
+            :color-type 'Number
+            :name $ :: 'Option 'String
+            :id $ :: 'Option 'String
+            :index 'Number
+          :examples $ []
+          :schema $ :: 'StructDef
+        'shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def shape
-            {}
+            %{} Shape
               :p0 $ [] 0 0 0
               :p1 $ [] 0 0 0
               :p2 $ [] 0 0 0
               :color-type 0
-              :name |
-              :id nil
+              :name $ %some |
+              :id $ %none
               :index 0
           :examples $ []
+          :schema $ :: 'app.schema/Shape
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
