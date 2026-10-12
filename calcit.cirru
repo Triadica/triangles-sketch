@@ -12,28 +12,34 @@
       :defs $ {}
         'comp-container $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-container (store)
-            let
-                focused-id $ :current-focus store
-                focused $ get-in store $ [] :shapes focused-id
-              group ({})
-                comp-landscape $ :shapes store
-                comp-axis
-                if (some? focused)
-                  group ({})
-                    comp-drag-point
-                      {} $ :position $ :p0 focused
-                      fn (p d!)
-                        d! :move-point $ {} (:id focused-id) (:point :p0) (:position p)
-                    comp-drag-point
-                      {} $ :position $ :p1 focused
-                      fn (p d!)
-                        d! :move-point $ {} (:id focused-id) (:point :p1) (:position p)
-                    comp-drag-point
-                      {} $ :position $ :p2 focused
-                      fn (p d!)
-                        d! :move-point $ {} (:id focused-id) (:point :p2) (:position p)
-                    comp-hint-line focused
+            group ({})
+              comp-landscape $ :shapes store
+              comp-axis
+              match (focused-shape store)
+                (:none)
+                  group $ {}
+                (:some focused)
+                  let
+                      focused-id $ .unwrap $ :current-focus store
+                    group ({})
+                      comp-drag-point
+                        {} $ :position $ :p0 focused
+                        fn (p d!)
+                          d! :move-point $ {} (:id focused-id) (:point :p0) (:position p)
+                      comp-drag-point
+                        {} $ :position $ :p1 focused
+                        fn (p d!)
+                          d! :move-point $ {} (:id focused-id) (:point :p1) (:position p)
+                      comp-drag-point
+                        {} $ :position $ :p2 focused
+                        fn (p d!)
+                          d! :move-point $ {} (:id focused-id) (:point :p2) (:position p)
+                      comp-hint-line focused
           :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] 'app.schema/Store
+            :features $ #{} :js-ffi
+            :return $ :: 'Map 'Tag 'Dynamic
         'comp-hint-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-hint-line (shape)
             object $ {} (:draw-mode :line-loop)
@@ -56,6 +62,7 @@
             app.comp.landscape :refer $ comp-landscape
             triadica.comp.drag-point :refer $ comp-drag-point
             triadica.vector :refer $ &v+
+            app.updater :refer $ focused-shape
     'app.comp.controller $ %{} 'FileEntry
       :defs $ {}
         '*index-cache $ %{} 'CodeEntry (:doc |)
@@ -116,6 +123,8 @@
               <> (str i)
                 {} (:font-family ui/font-code) (:opacity 0.8)
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] 'Number
         'comp-controller $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-controller (store)
             let
@@ -181,22 +190,33 @@
             list->
               {} $ :class-name css-shapes-list
               ->
-                .to-list $ .values shapes
-                .sort-by $ fn (shape) (:index shape)
+                .to-list $ .distinct-values shapes
+                .sort-by $ fn (shape)
+                  hint-fn $ {}
+                    :args $ [] 'app.schema/Shape
+                    :return 'Number
+                  :index shape
                 map $ fn (shape)
                   let
-                      shape-id $ :id shape
+                      shape-id $ .unwrap $ :id shape
+                      focused? $ match focused-id
+                        (:none) false
+                        (:some id) (= id shape-id)
                     [] shape-id $ div
                       {} (:class-name css-shape)
-                        :style $ if (= focused-id shape-id)
+                        :style $ if focused?
                           {} $ :background-color $ hsl 200 0 90
+                          {}
                         :on-click $ fn (e d!) (d! :focus-to shape-id)
-                      <> (:index shape)
+                      <>
+                        str $ :index shape
                         {} (:font-family ui/font-code)
                           :color $ hsl 0 0 60
                       =< 8 nil
                       comp-color-sample $ :color-type shape
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] (:: 'Map 'String 'app.schema/Shape) (:: 'Option 'String)
         'css-action $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-action
             {} $ |$0 $ {} (:margin "|0 8px") (:cursor :pointer) (:user-select :none)
@@ -309,13 +329,9 @@
     'app.main $ %{} 'FileEntry
       :defs $ {}
         '*store $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defatom *store
-            {}
-              :shapes $ {}
-              :states $ {}
-              :current-color-type 0
-              :current-focus nil
+          :code $ quote $ defref *store schema/store
           :examples $ []
+          :schema $ :: 'Ref 'app.schema/Store
         'canvas $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def canvas (js/document.querySelector |canvas)
           :examples $ []
@@ -323,11 +339,20 @@
           :code $ quote $ defn dispatch! (op data)
             when dev? $ js/console.log |Dispatch: op data
             let
-                next $ updater @*store op data (nanoid) (js/Date.now)
-              if
+                op-id $ expect-string |nanoid $ nanoid
+                op-time $ expect-number |Date.now $ js/Date.now
+                next $ if (list? op)
+                  update-cursor @*store
+                    decode-map-as op $ :: 'List 'Tag
+                    , data
+                  updater @*store (decode-map-as op 'Tag) data op-id op-time
+              when
                 not $ identical? next @*store
                 reset! *store next
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ [] 'Dynamic 'Dynamic
+            :features $ #{} :js-ffi
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             if dev? $ load-console-formatter!
@@ -377,10 +402,20 @@
             app.comp.controller :refer $ comp-controller
             triadica.alias :refer $ group
             app.schema :as schema
-            app.updater :refer $ updater
+            app.updater :refer $ updater update-cursor
             |nanoid :refer $ nanoid
+            js-ffi.contract :refer $ expect-string expect-number
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'MovePoint $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct MovePoint (:id 'String) (:point 'Tag)
+            :position $ :: 'List 'Number
+          :examples $ []
+          :schema $ :: 'StructDef
+        'RenameShape $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct RenameShape (:id 'String) (:name 'String)
+          :examples $ []
+          :schema $ :: 'StructDef
         'Shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Shape
             :p0 $ :: 'List 'Number
@@ -390,6 +425,14 @@
             :name $ :: 'Option 'String
             :id $ :: 'Option 'String
             :index 'Number
+          :examples $ []
+          :schema $ :: 'StructDef
+        'Store $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct Store
+            :shapes $ :: 'Map 'String 'app.schema/Shape
+            :states $ :: 'Map 'Tag 'Dynamic
+            :current-color-type 'Number
+            :current-focus $ :: 'Option 'String
           :examples $ []
           :schema $ :: 'StructDef
         'shape $ %{} 'CodeEntry (:doc |)
@@ -404,36 +447,81 @@
               :index 0
           :examples $ []
           :schema $ :: 'app.schema/Shape
+        'store $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ def store
+            %{} Store
+              :shapes $ {}
+              :states $ {}
+              :current-color-type 0
+              :current-focus $ %none
+          :examples $ []
+          :schema $ :: 'app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
-      :defs $ {} $ 'updater
-        %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn updater (store op data op-id op-time)
-            case-default op
-              do (js/console.warn "|unknown op" op) store
-              :states $ update-states store data
-              :color-type $ assoc store :current-color-type data
-              :new-shape $ -> store (assoc :current-focus op-id)
-                assoc-in ([] :shapes op-id) (assoc data :id op-id)
-              :rename-shape $ let
-                  shape-id $ :id data
-                  name $ :name data
-                assoc-in store ([] :shapes shape-id :name) name
-              :move-point $ let
-                  shape-id $ :id data
-                  position $ :position data
-                  point $ :point data
-                assoc-in store ([] :shapes shape-id point) position
-              :delete-shape $ dissoc-in store $ [] :shapes data
-              :reset-color-type $ let
-                  shape-id $ :current-focus store
-                  color $ :current-color-type store
-                assoc-in store ([] :shapes shape-id :color-type) color
-              :focus-to $ assoc store :current-focus data
+      :defs $ {}
+        'focused-shape $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn focused-shape (store)
+            match (:current-focus store)
+              (:none) (%none)
+              (:some id)
+                get (:shapes store) id
           :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] 'app.schema/Store
+            :return $ :: 'Option 'app.schema/Shape
+        'update-cursor $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn update-cursor (store cursor data)
+            assoc store :states $ decode-map-as
+              update-state-tree (:states store) cursor data
+              :: 'Map 'Tag 'Dynamic
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
+            :args $ [] 'app.schema/Store (:: 'List 'Tag) 'Dynamic
+            :features $ #{} :js-ffi
+        'updater $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn updater (store op data op-id op-time)
+            match op
+              :color-type $ assoc store :current-color-type $ decode-map-as data 'Number
+              :new-shape $ let
+                  shape $ assoc (decode-map-as data schema/Shape) :id $ %some op-id
+                -> store
+                  assoc :current-focus $ %some op-id
+                  assoc :shapes $ assoc (:shapes store) op-id shape
+              :rename-shape $ let
+                  change $ decode-map-as data schema/RenameShape
+                  shapes $ :shapes store
+                  id $ :id change
+                  shape $ .unwrap $ get shapes id
+                assoc store :shapes $ assoc shapes id $ assoc shape :name
+                  %some $ :name change
+              :move-point $ let
+                  change $ decode-map-as data schema/MovePoint
+                  shapes $ :shapes store
+                  id $ :id change
+                  shape $ .unwrap $ get shapes id
+                  position $ :position change
+                  next $ match (:point change)
+                    :p0 $ assoc shape :p0 position
+                    :p1 $ assoc shape :p1 position
+                    :p2 $ assoc shape :p2 position
+                    _ $ raise |unknown-shape-point
+                assoc store :shapes $ assoc shapes id next
+              :delete-shape $ assoc store :shapes $ dissoc (:shapes store) (decode-map-as data 'String)
+              :reset-color-type $ match (focused-shape store)
+                (:none) store
+                (:some shape)
+                  let
+                      id $ .unwrap $ :id shape
+                    assoc store :shapes $ assoc (:shapes store) id $ assoc shape :color-type (:current-color-type store)
+              :focus-to $ assoc store :current-focus $ %some (decode-map-as data 'String)
+              _ $ do (js/console.warn "|unknown op" op) store
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
+            :args $ [] 'app.schema/Store 'Tag 'Dynamic 'String 'Number
+            :features $ #{} :js-ffi
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
-            respo.cursor :refer $ update-states
+            respo.cursor :refer $ update-state-tree
             app.schema :as schema
