@@ -12,22 +12,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@calcit/procs@npm:0.29.0":
-  version: 0.29.0
-  resolution: "@calcit/procs@npm:0.29.0"
+"@calcit/procs@npm:0.29.1":
+  version: 0.29.1
+  resolution: "@calcit/procs@npm:0.29.1"
   dependencies:
     "@calcit/finger-vec": "npm:0.1.1"
     "@calcit/ternary-tree": "npm:0.0.26"
     "@cirru/parser.ts": "npm:0.0.10"
     "@cirru/writer.ts": "npm:^0.1.9"
-  checksum: 10c0/ff03d002491fff92af286abd0a9b6ad9e7dea4ffd5465465d81217fdac84cb383c93b861b7a6d7395ea7f9b84342dd6e012da10196ca471f667903a09ec920f2
+  checksum: 10c0/513044d9ece97a9ad222d159e4772dfe126352251d266ee2b2beb080def63d52042ed79c826048319e2fff27106d4b846d70ce9cfab283c8c508c0896509cc20
   languageName: node
   linkType: hard
 
-"@calcit/std@npm:^0.0.2":
-  version: 0.0.2
-  resolution: "@calcit/std@npm:0.0.2"
-  checksum: 10c0/e3a341e24dde17e415ac0913a756361431268f935609534ff35345f120ac8005deb1569d6e3935e08227ad90ba6cd13679de48b2cc38b30f1525bf85aa589aa6
+"@calcit/std@npm:0.0.3":
+  version: 0.0.3
+  resolution: "@calcit/std@npm:0.0.3"
+  checksum: 10c0/e622dc9f8a70006225889ca904d3c702bfa0a804aec6966c927d52182d83e61eb7f7c5bfe1418eac62885b8e80295497709356a0a7423dbe0e8102d6a7bc04b8
   languageName: node
   linkType: hard
 
@@ -191,8 +191,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@triadica/triangles-sketch@workspace:."
   dependencies:
-    "@calcit/procs": "npm:0.29.0"
-    "@calcit/std": "npm:^0.0.2"
+    "@calcit/procs": "npm:0.29.1"
+    "@calcit/std": "npm:0.0.3"
     "@triadica/touch-control": "npm:^0.0.3"
     bottom-tip: "npm:^0.1.5"
     mobile-detect: "npm:^1.4.5"
