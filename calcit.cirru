@@ -96,23 +96,24 @@
         'color-types $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def color-types
             []
-              {} (:value 0)
+              %{} ColorChoice (:value 0)
                 :display $ comp-color-sample 0
-              {} (:value 1)
+              %{} ColorChoice (:value 1)
                 :display $ comp-color-sample 1
-              {} (:value 2)
+              %{} ColorChoice (:value 2)
                 :display $ comp-color-sample 2
-              {} (:value 3)
+              %{} ColorChoice (:value 3)
                 :display $ comp-color-sample 3
-              {} (:value 4)
+              %{} ColorChoice (:value 4)
                 :display $ comp-color-sample 4
-              {} (:value 5)
+              %{} ColorChoice (:value 5)
                 :display $ comp-color-sample 5
-              {} (:value 6)
+              %{} ColorChoice (:value 6)
                 :display $ comp-color-sample 6
-              {} (:value 7)
+              %{} ColorChoice (:value 7)
                 :display $ comp-color-sample 7
           :examples $ []
+          :schema $ :: 'List 'app.schema/ColorChoice
         'comp-color-sample $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-color-sample (i)
             div
@@ -130,19 +131,20 @@
             let
                 states $ :states store
                 cursor $ []
-                state $ or (:data states)
+                raw-state $ .unwrap-or (get states :data) nil
+                state $ if (nil? raw-state)
                   {} $ :show-list? false
-                focused-shape $ if-let
-                  focus $ :current-focus store
-                  get-in store $ [] :shapes focus
+                  decode-map-as raw-state $ :: 'Map 'Tag 'Bool
+                show-list? $ .unwrap-or (get state :show-list?) false
+                focused $ focused-shape store
                 color-type $ :current-color-type store
                 colors-plugin $ use-modal (>> states :colors)
-                  {} (:title "|select color type") (:items color-types)
+                  {} (:title "|select color type")
                     :render $ fn (on-close)
                       list->
                         {} $ :style $ merge ui/row-middle
                           {} $ :padding |8px
-                        -> color-types $ map $ fn (info)
+                        map color-types $ fn (info)
                           [] (:value info)
                             div
                               {}
@@ -153,12 +155,16 @@
                               :display info
                 more-actions-plugin $ use-modal-menu (>> states :more)
                   {} (:title |actions) (:items actions)
-                    :on-result $ fn (v d!)
-                      cond
-                          = :delete $ :value v
-                          d! :delete-shape $ :current-focus store
-                        (= :reset-color-type (:value v))
-                          d! :reset-color-type nil
+                    :on-result $ fn (result d!)
+                      if (nil? result) &unit $ match result
+                        (:item value label)
+                          match (decode-map-as value 'Tag)
+                            :delete $ match (:current-focus store)
+                              (:none) &unit
+                              (:some id) (d! :delete-shape id)
+                            :reset-color-type $ d! :reset-color-type nil
+                            _ &unit
+                        _ $ raise |expected-modal-menu-item
               div
                 {} $ :class-name $ str-spaced css/global css/row-middle css-controller
                 span
@@ -168,23 +174,26 @@
                   comp-color-sample color-type
                 span $ {} (:class-name css-action) (:inner-text |List)
                   :on-click $ fn (e d!)
-                    d! cursor $ update state :show-list? not
+                    d! cursor $ assoc state :show-list? $ not show-list?
                 span $ {} (:class-name css-action) (:inner-text |Add)
                   :on-click $ fn (e d!)
                     d! :new-shape $ assemble-new-shape color-type
-                span $ {} (:class-name css-action) (:inner-text |Dupicate)
+                span $ {} (:class-name css-action) (:inner-text |Duplicate)
                   :on-click $ fn (e d!)
-                    d! :new-shape $ -> focused-shape (dissoc :id)
-                      assoc :index $ get-index!
+                    match focused
+                      (:none) &unit
+                      (:some shape)
+                        d! :new-shape $ assoc shape :index $ get-index!
                 span $ {} (:class-name css-action) (:inner-text |color!)
                   :on-click $ fn (e d!) (d! :reset-color-type nil)
                 span $ {} (:class-name css-action) (:inner-text |more...)
                   :on-click $ fn (e d!) (.show more-actions-plugin d!)
                 .render colors-plugin
                 .render more-actions-plugin
-                if (:show-list? state)
-                  comp-shapes-list (:shapes store) (:current-focus store)
+                if show-list? $ comp-shapes-list (:shapes store) (:current-focus store)
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'respo.schema/Component)
+            :args $ [] 'app.schema/Store
         'comp-shapes-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-shapes-list (shapes focused-id)
             list->
@@ -269,7 +278,8 @@
             respo-alerts.core :refer $ use-modal-menu use-modal
             triadica.perspective :as perspective
             triadica.vector :refer $ v-cross v-scale &v+
-            app.schema :refer $ Shape
+            app.schema :refer $ Shape ColorChoice
+            app.updater :refer $ focused-shape
     'app.comp.landscape $ %{} 'FileEntry
       :defs $ {}
         'comp-landscape $ %{} 'CodeEntry (:doc |)
@@ -332,9 +342,19 @@
           :code $ quote $ defref *store schema/store
           :examples $ []
           :schema $ :: 'Ref 'app.schema/Store
-        'canvas $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def canvas (js/document.querySelector |canvas)
+        'CanvasHost $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ deftrait CanvasHost
+            .get-context $ :: 'Fn $ {}
+              :args $ [] 'app.main/CanvasHost 'String 'JsObject
+              :return $ :: 'JsNullish 'JsObject
           :examples $ []
+          :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
+          :schema $ :: 'Trait
+        'canvas $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ def canvas
+            .unwrap $ query-selector |canvas
+          :examples $ []
+          :schema $ :: 'js-ffi.browser/DomElementHost
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op data)
             when dev? $ js/console.log |Dispatch: op data
@@ -356,38 +376,71 @@
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             if dev? $ load-console-formatter!
-            twgl/setDefaults $ js-object $ :attribPrefix |a_
+            twgl/setDefaults $ &js-object :attribPrefix |a_
             inject-hud!
             reset-canvas-size! canvas
-            reset! *gl-context $ .!getContext canvas |webgl $ js-object (:antialias true)
+            let
+                host $ js-cast canvas 'app.main/CanvasHost
+                context $ host .get-context |webgl $ &js-object :antialias true
+              if (js-present? context)
+                reset! *gl-context $ %some context
+                raise |WebGL-context-unavailable
             render-app!
             render-control!
             start-control-loop! 10 on-control-event
-            add-watch *store :change $ fn (v _p) (render-app!)
+            add-watch! *store :change $ fn (v _p) (render-app!)
             set! js/window.onresize $ fn (event) (reset-canvas-size! canvas) (render-app!)
             setup-mouse-events! canvas
+            , &unit
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
+            :features $ #{} :js-ffi
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def mount-target (js/document.querySelector |.controller)
+          :code $ quote $ def mount-target (query-mount-target)
           :examples $ []
+          :schema $ :: 'JsNullish 'respo.dom/DomElement
+        'query-mount-target $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn query-mount-target ()
+            let
+                document $ js-cast js/document 'respo.dom/DomDocument
+              document .query-selector |.controller
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ []
+            :features $ #{} :js-ffi
+            :return $ :: 'JsNullish 'respo.dom/DomElement
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors)
-              do (remove-watch *store :change) (respo/clear-cache!)
-                add-watch *store :change $ fn (v _p) (render-app!)
+              do (remove-watch! *store :change) (respo/clear-cache!)
+                add-watch! *store :change $ fn (v _p) (render-app!)
                 replace-control-loop! 10 on-control-event
                 set! js/window.onresize $ fn (event) (reset-canvas-size! canvas) (render-app!)
                 setup-mouse-events! canvas
                 render-app!
                 hud! |ok~ |OK
               hud! |error build-errors
+            , &unit
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
+            :features $ #{} :js-ffi
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
             load-objects! (comp-container @*store) dispatch!
             paint-canvas!
-            respo/render! mount-target (comp-controller @*store) dispatch!
+            respo/render! mount-target (comp-controller @*store)
+              fn (action)
+                let
+                    operation $ respo-operation action
+                  dispatch!
+                    .unwrap $ get operation 0
+                    .unwrap $ get operation 1
+            , &unit
           :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Unit)
+            :args $ []
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require (|./calcit.build-errors :default build-errors) (|bottom-tip :default hud!)
@@ -402,11 +455,16 @@
             app.comp.controller :refer $ comp-controller
             triadica.alias :refer $ group
             app.schema :as schema
-            app.updater :refer $ updater update-cursor
+            app.updater :refer $ updater update-cursor respo-operation
             |nanoid :refer $ nanoid
             js-ffi.contract :refer $ expect-string expect-number
+            js-ffi.browser :refer $ query-selector
     'app.schema $ %{} 'FileEntry
       :defs $ {}
+        'ColorChoice $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defstruct ColorChoice (:value 'Number) (:display 'respo.schema/Component)
+          :examples $ []
+          :schema $ :: 'StructDef
         'MovePoint $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct MovePoint (:id 'String) (:point 'Tag)
             :position $ :: 'List 'Number
@@ -470,6 +528,24 @@
           :schema $ :: 'Fn $ {}
             :args $ [] 'app.schema/Store
             :return $ :: 'Option 'app.schema/Shape
+        'respo-operation $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn respo-operation (action)
+            if (enum? action)
+              match action
+                (:states cursor state)
+                  []
+                    decode-map-as cursor $ :: 'List 'Tag
+                    , state
+                _ $ []
+                  decode-map-as
+                    .unwrap $ get action 0
+                    , 'Tag
+                  .unwrap-or (get action 1) nil
+              raise |expected-respo-action-enum
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] 'Dynamic
+            :return $ :: 'List 'Dynamic
         'update-cursor $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn update-cursor (store cursor data)
             assoc store :states $ decode-map-as
