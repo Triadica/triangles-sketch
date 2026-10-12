@@ -177,13 +177,13 @@
                     d! cursor $ assoc state :show-list? $ not show-list?
                 span $ {} (:class-name css-action) (:inner-text |Add)
                   :on-click $ fn (e d!)
-                    d! :new-shape $ assemble-new-shape color-type
+                    d! :new-shape $ .to-map $ assemble-new-shape color-type
                 span $ {} (:class-name css-action) (:inner-text |Duplicate)
                   :on-click $ fn (e d!)
                     match focused
                       (:none) &unit
                       (:some shape)
-                        d! :new-shape $ assoc shape :index $ get-index!
+                        d! :new-shape $ .to-map $ assoc shape :index (get-index!)
                 span $ {} (:class-name css-action) (:inner-text |color!)
                   :on-click $ fn (e d!) (d! :reset-color-type nil)
                 span $ {} (:class-name css-action) (:inner-text |more...)
