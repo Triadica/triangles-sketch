@@ -369,6 +369,7 @@
               when
                 not $ identical? next @*store
                 reset! *store next
+            , &unit
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ [] 'Dynamic 'Dynamic
