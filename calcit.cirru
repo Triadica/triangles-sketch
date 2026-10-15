@@ -81,37 +81,27 @@
                 upward @perspective/*viewer-upward
                 rightward $ v-cross forward upward
                 p0 $ &v+ viewer $ v-scale forward 200
-              %{} Shape (:p0 p0)
-                :p1 $ &v+ p0 $ v-scale rightward 200
-                :p2 $ &v+
-                  &v+ p0 $ v-scale upward 100
-                  v-scale forward 20
-                :color-type color-type
-                :index $ get-index!
-                :id $ %none
-                :name $ %none
+              Shape :p0 p0 :p1
+                &v+ p0 $ v-scale rightward 200
+                , :p2
+                  &v+
+                    &v+ p0 $ v-scale upward 100
+                    v-scale forward 20
+                  , :color-type color-type :index (get-index!) :id (Option :none) :name $ Option :none
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'app.schema/Shape)
             :args $ [] 'Number
         'color-types $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def color-types
             []
-              %{} ColorChoice (:value 0)
-                :display $ comp-color-sample 0
-              %{} ColorChoice (:value 1)
-                :display $ comp-color-sample 1
-              %{} ColorChoice (:value 2)
-                :display $ comp-color-sample 2
-              %{} ColorChoice (:value 3)
-                :display $ comp-color-sample 3
-              %{} ColorChoice (:value 4)
-                :display $ comp-color-sample 4
-              %{} ColorChoice (:value 5)
-                :display $ comp-color-sample 5
-              %{} ColorChoice (:value 6)
-                :display $ comp-color-sample 6
-              %{} ColorChoice (:value 7)
-                :display $ comp-color-sample 7
+              ColorChoice :value 0 :display $ comp-color-sample 0
+              ColorChoice :value 1 :display $ comp-color-sample 1
+              ColorChoice :value 2 :display $ comp-color-sample 2
+              ColorChoice :value 3 :display $ comp-color-sample 3
+              ColorChoice :value 4 :display $ comp-color-sample 4
+              ColorChoice :value 5 :display $ comp-color-sample 5
+              ColorChoice :value 6 :display $ comp-color-sample 6
+              ColorChoice :value 7 :display $ comp-color-sample 7
           :examples $ []
           :schema $ :: 'List 'app.schema/ColorChoice
         'comp-color-sample $ %{} 'CodeEntry (:doc |)
@@ -250,7 +240,7 @@
         'css-shapes-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-shapes-list
             {} $ |$0 $ {} (:position :fixed) (:z-index 1001) (:top 44) (:left 120) (:min-width 40) (:max-height |84vh) (:padding "|8px 0") (:border-radius |4px) (:z-index 80) (:overflow :auto) (:padding-bottom 100) (:line-height |20px)
-              :background-color $ hsl 0 0 100 $ %some 0.8
+              :background-color $ hsl 0 0 100 $ Option :some 0.8
           :examples $ []
         'get-index! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn get-index! ()
@@ -263,7 +253,7 @@
             :args $ []
         'index->color $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn index->color (i)
-            case-default i |black (0 |white) (1 |red) (2 |green) (3 |blue) (4 |#ff0) (5 |#f0f) (6 |#0ff)
+            match i (0 |white) (1 |red) (2 |green) (3 |blue) (4 |#ff0) (5 |#f0f) (6 |#0ff) (_ |black)
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] 'Number
@@ -384,7 +374,7 @@
                 host $ js-cast canvas 'app.main/CanvasHost
                 context $ host .get-context |webgl $ &js-object :antialias true
               if (js-present? context)
-                reset! *gl-context $ %some context
+                reset! *gl-context $ Option :some context
                 raise |WebGL-context-unavailable
             render-app!
             render-control!
@@ -496,23 +486,12 @@
           :schema $ :: 'StructDef
         'shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def shape
-            %{} Shape
-              :p0 $ [] 0 0 0
-              :p1 $ [] 0 0 0
-              :p2 $ [] 0 0 0
-              :color-type 0
-              :name $ %some |
-              :id $ %none
-              :index 0
+            Shape :p0 ([] 0 0 0) :p1 ([] 0 0 0) :p2 ([] 0 0 0) :color-type 0 :name (Option :some |) :id (Option :none) :index 0
           :examples $ []
           :schema $ :: 'app.schema/Shape
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
-            %{} Store
-              :shapes $ {}
-              :states $ {}
-              :current-color-type 0
-              :current-focus $ %none
+            Store :shapes ({}) :states ({}) :current-color-type 0 :current-focus $ Option :none
           :examples $ []
           :schema $ :: 'app.schema/Store
       :ns $ %{} 'NsEntry (:doc |)
@@ -522,7 +501,7 @@
         'focused-shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn focused-shape (store)
             match (:current-focus store)
-              (:none) (%none)
+              (:none) (Option :none)
               (:some id)
                 get (:shapes store) id
           :examples $ []
@@ -561,9 +540,9 @@
             match op
               :color-type $ assoc store :current-color-type $ decode-map-as data 'Number
               :new-shape $ let
-                  shape $ assoc (decode-map-as data schema/Shape) :id $ %some op-id
+                  shape $ assoc (decode-map-as data schema/Shape) :id $ Option :some op-id
                 -> store
-                  assoc :current-focus $ %some op-id
+                  assoc :current-focus $ Option :some op-id
                   assoc :shapes $ assoc (:shapes store) op-id shape
               :rename-shape $ let
                   change $ decode-map-as data schema/RenameShape
@@ -571,7 +550,7 @@
                   id $ :id change
                   shape $ .unwrap $ get shapes id
                 assoc store :shapes $ assoc shapes id $ assoc shape :name
-                  %some $ :name change
+                  Option :some $ :name change
               :move-point $ let
                   change $ decode-map-as data schema/MovePoint
                   shapes $ :shapes store
@@ -591,7 +570,7 @@
                   let
                       id $ .unwrap $ :id shape
                     assoc store :shapes $ assoc (:shapes store) id $ assoc shape :color-type (:current-color-type store)
-              :focus-to $ assoc store :current-focus $ %some (decode-map-as data 'String)
+              :focus-to $ assoc store :current-focus $ Option :some (decode-map-as data 'String)
               _ $ do (js/console.warn "|unknown op" op) store
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'app.schema/Store)
