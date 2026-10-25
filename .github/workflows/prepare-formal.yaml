@@ -1,0 +1,60 @@
+name: Protected formal Triangles Sketch migration
+on:
+  push:
+    branches: [prepare/triangles-formal-0301]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v6.5.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - uses: calcit-lang/setup-calcit@ca701be5a471759e442aa053cd100720bbe1f09f # v1.5.0
+        with:
+          deps-file: deps.cirru
+          tools: calcit,caps
+          caps-version: "0.1.1"
+      - run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare yarn@4.18.0 --activate
+          caps --strict --ci
+          yarn install --mode=update-lockfile
+          yarn install --immutable
+          caps verify --toolchain
+          node prepare-source.mjs
+      - name: Original canonical, strict and build gates
+        run: |
+          set -euo pipefail
+          test ! -e compact.cirru
+          test ! -e package.cirru
+          calcit calcit.cirru edit format
+          git diff --exit-code -- calcit.cirru
+          calcit calcit.cirru --check-only --all-defs --strict-types
+          calcit calcit.cirru fix --workflow strict --verify --format json | tee acceptance/strict.json
+          jq -e '.data.workflow.status == "passed" and .diagnostics == []' acceptance/strict.json
+          calcit calcit.cirru js
+          yarn vite build --base=./
+          node prepare-source.mjs
+      - uses: actions/upload-artifact@v7.0.2
+        if: success()
+        with:
+          name: triangles-accepted-lock
+          path: yarn.lock
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: triangles-diagnostics
+          path: acceptance
+          if-no-files-found: warn
+          retention-days: 30

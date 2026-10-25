@@ -1,0 +1,4281 @@
+{
+  "base": "a24e70498cae2c891b25a0b700b3d1769bdb4ea9",
+  "blob": "46af0cf534ac6d6c420bef9106440beb64152061",
+  "before": {
+    "config": {
+      "package": "app",
+      "version": "0.0.1",
+      "selected_entry": null,
+      "entries": [
+        {
+          "name": "default",
+          "mode": "js",
+          "target": "browser",
+          "init_fn": "app.main/main!",
+          "reload_fn": "app.main/reload!",
+          "description": "",
+          "modules": [
+            "touch-control/",
+            "respo.calcit/",
+            "triadica-space/",
+            "respo-ui.calcit/",
+            "alerts.calcit/",
+            "js-ffi/"
+          ],
+          "type_slots": {},
+          "feature_policy": {}
+        }
+      ],
+      "verification_schema_version": 1,
+      "verification_profiles": []
+    },
+    "namespaces": [
+      {
+        "definition_count": 2,
+        "doc": "",
+        "namespace": "app.$meta",
+        "ns_code": [
+          "ns",
+          "app.$meta"
+        ]
+      },
+      {
+        "definition_count": 2,
+        "doc": "",
+        "namespace": "app.comp.container",
+        "ns_code": [
+          "ns",
+          "app.comp.container",
+          [
+            ":require",
+            [
+              "app.config",
+              ":refer",
+              [
+                "inline-shader"
+              ]
+            ],
+            [
+              "triadica.alias",
+              ":refer",
+              [
+                "object",
+                "group"
+              ]
+            ],
+            [
+              "triadica.comp.axis",
+              ":refer",
+              [
+                "comp-axis"
+              ]
+            ],
+            [
+              "app.comp.landscape",
+              ":refer",
+              [
+                "comp-landscape"
+              ]
+            ],
+            [
+              "triadica.comp.drag-point",
+              ":refer",
+              [
+                "comp-drag-point"
+              ]
+            ],
+            [
+              "triadica.vector",
+              ":refer",
+              [
+                "&v+"
+              ]
+            ],
+            [
+              "app.updater",
+              ":refer",
+              [
+                "focused-shape"
+              ]
+            ]
+          ]
+        ]
+      },
+      {
+        "definition_count": 14,
+        "doc": "",
+        "namespace": "app.comp.controller",
+        "ns_code": [
+          "ns",
+          "app.comp.controller",
+          [
+            ":require",
+            [
+              "respo-ui.core",
+              ":as",
+              "ui"
+            ],
+            [
+              "respo-ui.core",
+              ":refer",
+              [
+                "hsl"
+              ]
+            ],
+            [
+              "respo.core",
+              ":refer",
+              [
+                "defcomp",
+                "defeffect",
+                "<>",
+                ">>",
+                "div",
+                "button",
+                "textarea",
+                "span",
+                "input",
+                "list->"
+              ]
+            ],
+            [
+              "respo.comp.space",
+              ":refer",
+              [
+                "=<"
+              ]
+            ],
+            [
+              "respo.css",
+              ":refer",
+              [
+                "defstyle"
+              ]
+            ],
+            [
+              "respo-ui.css",
+              ":as",
+              "css"
+            ],
+            [
+              "respo-alerts.core",
+              ":refer",
+              [
+                "use-modal-menu",
+                "use-modal"
+              ]
+            ],
+            [
+              "triadica.perspective",
+              ":as",
+              "perspective"
+            ],
+            [
+              "triadica.vector",
+              ":refer",
+              [
+                "v-cross",
+                "v-scale",
+                "&v+"
+              ]
+            ],
+            [
+              "app.schema",
+              ":refer",
+              [
+                "Shape",
+                "ColorChoice"
+              ]
+            ],
+            [
+              "app.updater",
+              ":refer",
+              [
+                "focused-shape"
+              ]
+            ]
+          ]
+        ]
+      },
+      {
+        "definition_count": 4,
+        "doc": "",
+        "namespace": "app.comp.landscape",
+        "ns_code": [
+          "ns",
+          "app.comp.landscape",
+          [
+            ":require",
+            [
+              "app.config",
+              ":refer",
+              [
+                "inline-shader"
+              ]
+            ],
+            [
+              "triadica.alias",
+              ":refer",
+              [
+                "object",
+                "group"
+              ]
+            ]
+          ]
+        ]
+      },
+      {
+        "definition_count": 1,
+        "doc": "",
+        "namespace": "app.config",
+        "ns_code": [
+          "ns",
+          "app.config"
+        ]
+      },
+      {
+        "definition_count": 9,
+        "doc": "",
+        "namespace": "app.main",
+        "ns_code": [
+          "ns",
+          "app.main",
+          [
+            ":require",
+            [
+              "|./calcit.build-errors",
+              ":default",
+              "build-errors"
+            ],
+            [
+              "|bottom-tip",
+              ":default",
+              "hud!"
+            ],
+            [
+              "triadica.config",
+              ":refer",
+              [
+                "dev?",
+                "dpr"
+              ]
+            ],
+            [
+              "|twgl.js",
+              ":as",
+              "twgl"
+            ],
+            [
+              "respo.core",
+              ":as",
+              "respo"
+            ],
+            [
+              "touch-control.core",
+              ":refer",
+              [
+                "render-control!",
+                "start-control-loop!",
+                "replace-control-loop!"
+              ]
+            ],
+            [
+              "triadica.core",
+              ":refer",
+              [
+                "handle-key-event",
+                "on-control-event",
+                "load-objects!",
+                "paint-canvas!",
+                "handle-screen-click!",
+                "setup-mouse-events!",
+                "reset-canvas-size!"
+              ]
+            ],
+            [
+              "triadica.global",
+              ":refer",
+              [
+                "*gl-context",
+                "*uniform-data"
+              ]
+            ],
+            [
+              "triadica.hud",
+              ":refer",
+              [
+                "inject-hud!"
+              ]
+            ],
+            [
+              "app.comp.container",
+              ":refer",
+              [
+                "comp-container"
+              ]
+            ],
+            [
+              "app.comp.controller",
+              ":refer",
+              [
+                "comp-controller"
+              ]
+            ],
+            [
+              "triadica.alias",
+              ":refer",
+              [
+                "group"
+              ]
+            ],
+            [
+              "app.schema",
+              ":as",
+              "schema"
+            ],
+            [
+              "app.updater",
+              ":refer",
+              [
+                "updater",
+                "update-cursor",
+                "respo-operation"
+              ]
+            ],
+            [
+              "|nanoid",
+              ":refer",
+              [
+                "nanoid"
+              ]
+            ],
+            [
+              "js-ffi.contract",
+              ":refer",
+              [
+                "expect-string",
+                "expect-number"
+              ]
+            ],
+            [
+              "js-ffi.browser",
+              ":refer",
+              [
+                "query-selector"
+              ]
+            ]
+          ]
+        ]
+      },
+      {
+        "definition_count": 7,
+        "doc": "",
+        "namespace": "app.schema",
+        "ns_code": [
+          "ns",
+          "app.schema"
+        ]
+      },
+      {
+        "definition_count": 4,
+        "doc": "",
+        "namespace": "app.updater",
+        "ns_code": [
+          "ns",
+          "app.updater",
+          [
+            ":require",
+            [
+              "respo.cursor",
+              ":refer",
+              [
+                "update-state-tree"
+              ]
+            ],
+            [
+              "app.schema",
+              ":as",
+              "schema"
+            ]
+          ]
+        ]
+      }
+    ],
+    "defs": [
+      {
+        "code": [
+          "def",
+          "calcit-dirname",
+          "|"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.$meta/calcit-dirname",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "calcit-filename",
+          "|calcit.cirru"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.$meta/calcit-filename",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "comp-container",
+          [
+            "store"
+          ],
+          [
+            "group",
+            [
+              "{}"
+            ],
+            [
+              "comp-landscape",
+              [
+                ":shapes",
+                "store"
+              ]
+            ],
+            [
+              "comp-axis"
+            ],
+            [
+              "match",
+              [
+                "focused-shape",
+                "store"
+              ],
+              [
+                [
+                  ":none"
+                ],
+                [
+                  "group",
+                  [
+                    "{}"
+                  ]
+                ]
+              ],
+              [
+                [
+                  ":some",
+                  "focused"
+                ],
+                [
+                  "let",
+                  [
+                    [
+                      "focused-id",
+                      [
+                        ".unwrap",
+                        [
+                          ":current-focus",
+                          "store"
+                        ]
+                      ]
+                    ]
+                  ],
+                  [
+                    "group",
+                    [
+                      "{}"
+                    ],
+                    [
+                      "comp-drag-point",
+                      [
+                        "{}",
+                        [
+                          ":position",
+                          [
+                            ":p0",
+                            "focused"
+                          ]
+                        ]
+                      ],
+                      [
+                        "fn",
+                        [
+                          "p",
+                          "d!"
+                        ],
+                        [
+                          "d!",
+                          ":move-point",
+                          [
+                            "{}",
+                            [
+                              ":id",
+                              "focused-id"
+                            ],
+                            [
+                              ":point",
+                              ":p0"
+                            ],
+                            [
+                              ":position",
+                              "p"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      "comp-drag-point",
+                      [
+                        "{}",
+                        [
+                          ":position",
+                          [
+                            ":p1",
+                            "focused"
+                          ]
+                        ]
+                      ],
+                      [
+                        "fn",
+                        [
+                          "p",
+                          "d!"
+                        ],
+                        [
+                          "d!",
+                          ":move-point",
+                          [
+                            "{}",
+                            [
+                              ":id",
+                              "focused-id"
+                            ],
+                            [
+                              ":point",
+                              ":p1"
+                            ],
+                            [
+                              ":position",
+                              "p"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      "comp-drag-point",
+                      [
+                        "{}",
+                        [
+                          ":position",
+                          [
+                            ":p2",
+                            "focused"
+                          ]
+                        ]
+                      ],
+                      [
+                        "fn",
+                        [
+                          "p",
+                          "d!"
+                        ],
+                        [
+                          "d!",
+                          ":move-point",
+                          [
+                            "{}",
+                            [
+                              ":id",
+                              "focused-id"
+                            ],
+                            [
+                              ":point",
+                              ":p2"
+                            ],
+                            [
+                              ":position",
+                              "p"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      "comp-hint-line",
+                      "focused"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/comp-container",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'Map",
+              "'Tag",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "comp-hint-line",
+          [
+            "shape"
+          ],
+          [
+            "object",
+            [
+              "{}",
+              [
+                ":draw-mode",
+                ":line-loop"
+              ],
+              [
+                ":vertex-shader",
+                [
+                  "inline-shader",
+                  "|line.vert"
+                ]
+              ],
+              [
+                ":fragment-shader",
+                [
+                  "inline-shader",
+                  "|line.frag"
+                ]
+              ],
+              [
+                ":points",
+                [
+                  "[]",
+                  [
+                    "&v+",
+                    [
+                      ":p0",
+                      "shape"
+                    ],
+                    [
+                      "[]",
+                      "0",
+                      "2",
+                      "0"
+                    ]
+                  ],
+                  [
+                    "&v+",
+                    [
+                      ":p1",
+                      "shape"
+                    ],
+                    [
+                      "[]",
+                      "0",
+                      "2",
+                      "0"
+                    ]
+                  ],
+                  [
+                    "&v+",
+                    [
+                      ":p2",
+                      "shape"
+                    ],
+                    [
+                      "[]",
+                      "0",
+                      "2",
+                      "0"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.container/comp-hint-line",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Shape"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'Map",
+              "'Tag",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defref",
+          "*index-cache",
+          "0"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/*index-cache",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'Ref",
+          "'Number"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "actions",
+          [
+            "[]",
+            [
+              "{}",
+              [
+                ":value",
+                ":delete"
+              ],
+              [
+                ":display",
+                "|DELETE"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/actions",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "assemble-new-shape",
+          [
+            "color-type"
+          ],
+          [
+            "let",
+            [
+              [
+                "viewer",
+                "@perspective/*viewer-position"
+              ],
+              [
+                "forward",
+                "@perspective/*viewer-forward"
+              ],
+              [
+                "upward",
+                "@perspective/*viewer-upward"
+              ],
+              [
+                "rightward",
+                [
+                  "v-cross",
+                  "forward",
+                  "upward"
+                ]
+              ],
+              [
+                "p0",
+                [
+                  "&v+",
+                  "viewer",
+                  [
+                    "v-scale",
+                    "forward",
+                    "200"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "Shape",
+              ":p0",
+              "p0",
+              ":p1",
+              [
+                "&v+",
+                "p0",
+                [
+                  "v-scale",
+                  "rightward",
+                  "200"
+                ]
+              ],
+              ":p2",
+              [
+                "&v+",
+                [
+                  "&v+",
+                  "p0",
+                  [
+                    "v-scale",
+                    "upward",
+                    "100"
+                  ]
+                ],
+                [
+                  "v-scale",
+                  "forward",
+                  "20"
+                ]
+              ],
+              ":color-type",
+              "color-type",
+              ":index",
+              [
+                "get-index!"
+              ],
+              ":id",
+              [
+                "Option",
+                ":none"
+              ],
+              ":name",
+              [
+                "Option",
+                ":none"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/assemble-new-shape",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'app.schema/Shape"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Number"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "color-types",
+          [
+            "[]",
+            [
+              "ColorChoice",
+              ":value",
+              "0",
+              ":display",
+              [
+                "comp-color-sample",
+                "0"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "1",
+              ":display",
+              [
+                "comp-color-sample",
+                "1"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "2",
+              ":display",
+              [
+                "comp-color-sample",
+                "2"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "3",
+              ":display",
+              [
+                "comp-color-sample",
+                "3"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "4",
+              ":display",
+              [
+                "comp-color-sample",
+                "4"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "5",
+              ":display",
+              [
+                "comp-color-sample",
+                "5"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "6",
+              ":display",
+              [
+                "comp-color-sample",
+                "6"
+              ]
+            ],
+            [
+              "ColorChoice",
+              ":value",
+              "7",
+              ":display",
+              [
+                "comp-color-sample",
+                "7"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/color-types",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'List",
+          "'app.schema/ColorChoice"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defcomp",
+          "comp-color-sample",
+          [
+            "i"
+          ],
+          [
+            "div",
+            [
+              "{}",
+              [
+                ":class-name",
+                "css-color-sample"
+              ],
+              [
+                ":style",
+                [
+                  "{}",
+                  [
+                    ":background-color",
+                    [
+                      "index->color",
+                      "i"
+                    ]
+                  ],
+                  [
+                    ":margin",
+                    "|4px 8px"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "<>",
+              [
+                "str",
+                "i"
+              ],
+              [
+                "{}",
+                [
+                  ":font-family",
+                  "ui/font-code"
+                ],
+                [
+                  ":opacity",
+                  "0.8"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/comp-color-sample",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Component"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Number"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defcomp",
+          "comp-controller",
+          [
+            "store"
+          ],
+          [
+            "let",
+            [
+              [
+                "states",
+                [
+                  ":states",
+                  "store"
+                ]
+              ],
+              [
+                "cursor",
+                [
+                  "[]"
+                ]
+              ],
+              [
+                "raw-state",
+                [
+                  ".unwrap-or",
+                  [
+                    "get",
+                    "states",
+                    ":data"
+                  ],
+                  "nil"
+                ]
+              ],
+              [
+                "state",
+                [
+                  "if",
+                  [
+                    "nil?",
+                    "raw-state"
+                  ],
+                  [
+                    "{}",
+                    [
+                      ":show-list?",
+                      "false"
+                    ]
+                  ],
+                  [
+                    "decode-map-as",
+                    "raw-state",
+                    [
+                      "::",
+                      "'Map",
+                      "'Tag",
+                      "'Bool"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "show-list?",
+                [
+                  ".unwrap-or",
+                  [
+                    "get",
+                    "state",
+                    ":show-list?"
+                  ],
+                  "false"
+                ]
+              ],
+              [
+                "focused",
+                [
+                  "focused-shape",
+                  "store"
+                ]
+              ],
+              [
+                "color-type",
+                [
+                  ":current-color-type",
+                  "store"
+                ]
+              ],
+              [
+                "colors-plugin",
+                [
+                  "use-modal",
+                  [
+                    ">>",
+                    "states",
+                    ":colors"
+                  ],
+                  [
+                    "{}",
+                    [
+                      ":title",
+                      "|select color type"
+                    ],
+                    [
+                      ":render",
+                      [
+                        "fn",
+                        [
+                          "on-close"
+                        ],
+                        [
+                          "list->",
+                          [
+                            "{}",
+                            [
+                              ":style",
+                              [
+                                "merge",
+                                "ui/row-middle",
+                                [
+                                  "{}",
+                                  [
+                                    ":padding",
+                                    "|8px"
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ],
+                          [
+                            "map",
+                            "color-types",
+                            [
+                              "fn",
+                              [
+                                "info"
+                              ],
+                              [
+                                "[]",
+                                [
+                                  ":value",
+                                  "info"
+                                ],
+                                [
+                                  "div",
+                                  [
+                                    "{}",
+                                    [
+                                      ":style",
+                                      [
+                                        "{}",
+                                        [
+                                          ":cursor",
+                                          ":pointer"
+                                        ]
+                                      ]
+                                    ],
+                                    [
+                                      ":on-click",
+                                      [
+                                        "fn",
+                                        [
+                                          "e",
+                                          "d!"
+                                        ],
+                                        [
+                                          "d!",
+                                          ":color-type",
+                                          [
+                                            ":value",
+                                            "info"
+                                          ]
+                                        ],
+                                        [
+                                          "on-close",
+                                          "d!"
+                                        ]
+                                      ]
+                                    ]
+                                  ],
+                                  [
+                                    ":display",
+                                    "info"
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "more-actions-plugin",
+                [
+                  "use-modal-menu",
+                  [
+                    ">>",
+                    "states",
+                    ":more"
+                  ],
+                  [
+                    "{}",
+                    [
+                      ":title",
+                      "|actions"
+                    ],
+                    [
+                      ":items",
+                      "actions"
+                    ],
+                    [
+                      ":on-result",
+                      [
+                        "fn",
+                        [
+                          "result",
+                          "d!"
+                        ],
+                        [
+                          "if",
+                          [
+                            "nil?",
+                            "result"
+                          ],
+                          "&unit",
+                          [
+                            "match",
+                            "result",
+                            [
+                              [
+                                ":item",
+                                "value",
+                                "label"
+                              ],
+                              [
+                                "match",
+                                [
+                                  "decode-map-as",
+                                  "value",
+                                  "'Tag"
+                                ],
+                                [
+                                  ":delete",
+                                  [
+                                    "match",
+                                    [
+                                      ":current-focus",
+                                      "store"
+                                    ],
+                                    [
+                                      [
+                                        ":none"
+                                      ],
+                                      "&unit"
+                                    ],
+                                    [
+                                      [
+                                        ":some",
+                                        "id"
+                                      ],
+                                      [
+                                        "d!",
+                                        ":delete-shape",
+                                        "id"
+                                      ]
+                                    ]
+                                  ]
+                                ],
+                                [
+                                  ":reset-color-type",
+                                  [
+                                    "d!",
+                                    ":reset-color-type",
+                                    "nil"
+                                  ]
+                                ],
+                                [
+                                  "_",
+                                  "&unit"
+                                ]
+                              ]
+                            ],
+                            [
+                              "_",
+                              [
+                                "raise",
+                                "|expected-modal-menu-item"
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              "div",
+              [
+                "{}",
+                [
+                  ":class-name",
+                  [
+                    "str-spaced",
+                    "css/global",
+                    "css/row-middle",
+                    "css-controller"
+                  ]
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":style",
+                    "ui/row-middle"
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        ".show",
+                        "colors-plugin",
+                        "d!"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "<>",
+                  "|ColorType:"
+                ],
+                [
+                  "comp-color-sample",
+                  "color-type"
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":inner-text",
+                    "|List"
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        "d!",
+                        "cursor",
+                        [
+                          "assoc",
+                          "state",
+                          ":show-list?",
+                          [
+                            "not",
+                            "show-list?"
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":inner-text",
+                    "|Add"
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        "d!",
+                        ":new-shape",
+                        [
+                          ".to-map",
+                          [
+                            "assemble-new-shape",
+                            "color-type"
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":inner-text",
+                    "|Duplicate"
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        "match",
+                        "focused",
+                        [
+                          [
+                            ":none"
+                          ],
+                          "&unit"
+                        ],
+                        [
+                          [
+                            ":some",
+                            "shape"
+                          ],
+                          [
+                            "d!",
+                            ":new-shape",
+                            [
+                              ".to-map",
+                              [
+                                "assoc",
+                                "shape",
+                                ":index",
+                                [
+                                  "get-index!"
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":inner-text",
+                    "|color!"
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        "d!",
+                        ":reset-color-type",
+                        "nil"
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "span",
+                [
+                  "{}",
+                  [
+                    ":class-name",
+                    "css-action"
+                  ],
+                  [
+                    ":inner-text",
+                    "|more..."
+                  ],
+                  [
+                    ":on-click",
+                    [
+                      "fn",
+                      [
+                        "e",
+                        "d!"
+                      ],
+                      [
+                        ".show",
+                        "more-actions-plugin",
+                        "d!"
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              [
+                ".render",
+                "colors-plugin"
+              ],
+              [
+                ".render",
+                "more-actions-plugin"
+              ],
+              [
+                "if",
+                "show-list?",
+                [
+                  "comp-shapes-list",
+                  [
+                    ":shapes",
+                    "store"
+                  ],
+                  [
+                    ":current-focus",
+                    "store"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/comp-controller",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Component"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defcomp",
+          "comp-shapes-list",
+          [
+            "shapes",
+            "focused-id"
+          ],
+          [
+            "list->",
+            [
+              "{}",
+              [
+                ":class-name",
+                "css-shapes-list"
+              ]
+            ],
+            [
+              "->",
+              [
+                ".to-list",
+                [
+                  ".distinct-values",
+                  "shapes"
+                ]
+              ],
+              [
+                ".sort-by",
+                [
+                  "fn",
+                  [
+                    "shape"
+                  ],
+                  [
+                    "hint-fn",
+                    [
+                      "{}",
+                      [
+                        ":args",
+                        [
+                          "[]",
+                          "'app.schema/Shape"
+                        ]
+                      ],
+                      [
+                        ":return",
+                        "'Number"
+                      ]
+                    ]
+                  ],
+                  [
+                    ":index",
+                    "shape"
+                  ]
+                ]
+              ],
+              [
+                "map",
+                [
+                  "fn",
+                  [
+                    "shape"
+                  ],
+                  [
+                    "let",
+                    [
+                      [
+                        "shape-id",
+                        [
+                          ".unwrap",
+                          [
+                            ":id",
+                            "shape"
+                          ]
+                        ]
+                      ],
+                      [
+                        "focused?",
+                        [
+                          "match",
+                          "focused-id",
+                          [
+                            [
+                              ":none"
+                            ],
+                            "false"
+                          ],
+                          [
+                            [
+                              ":some",
+                              "id"
+                            ],
+                            [
+                              "=",
+                              "id",
+                              "shape-id"
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      "[]",
+                      "shape-id",
+                      [
+                        "div",
+                        [
+                          "{}",
+                          [
+                            ":class-name",
+                            "css-shape"
+                          ],
+                          [
+                            ":style",
+                            [
+                              "if",
+                              "focused?",
+                              [
+                                "{}",
+                                [
+                                  ":background-color",
+                                  [
+                                    "hsl",
+                                    "200",
+                                    "0",
+                                    "90"
+                                  ]
+                                ]
+                              ],
+                              [
+                                "{}"
+                              ]
+                            ]
+                          ],
+                          [
+                            ":on-click",
+                            [
+                              "fn",
+                              [
+                                "e",
+                                "d!"
+                              ],
+                              [
+                                "d!",
+                                ":focus-to",
+                                "shape-id"
+                              ]
+                            ]
+                          ]
+                        ],
+                        [
+                          "<>",
+                          [
+                            "str",
+                            [
+                              ":index",
+                              "shape"
+                            ]
+                          ],
+                          [
+                            "{}",
+                            [
+                              ":font-family",
+                              "ui/font-code"
+                            ],
+                            [
+                              ":color",
+                              [
+                                "hsl",
+                                "0",
+                                "0",
+                                "60"
+                              ]
+                            ]
+                          ]
+                        ],
+                        [
+                          "=<",
+                          "8",
+                          "nil"
+                        ],
+                        [
+                          "comp-color-sample",
+                          [
+                            ":color-type",
+                            "shape"
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/comp-shapes-list",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'respo.schema/Component"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'Map",
+                "'String",
+                "'app.schema/Shape"
+              ],
+              [
+                "::",
+                "'Option",
+                "'String"
+              ]
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstyle",
+          "css-action",
+          [
+            "{}",
+            [
+              "|$0",
+              [
+                "{}",
+                [
+                  ":margin",
+                  "|0 8px"
+                ],
+                [
+                  ":cursor",
+                  ":pointer"
+                ],
+                [
+                  ":user-select",
+                  ":none"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/css-action",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstyle",
+          "css-color-sample",
+          [
+            "{}",
+            [
+              "|$0",
+              [
+                "merge",
+                "ui/center",
+                [
+                  "{}",
+                  [
+                    ":width",
+                    "20"
+                  ],
+                  [
+                    ":height",
+                    "20"
+                  ],
+                  [
+                    ":border-radius",
+                    "|4px"
+                  ],
+                  [
+                    ":color",
+                    ":white"
+                  ],
+                  [
+                    ":border",
+                    [
+                      "str",
+                      "|1px solid ",
+                      [
+                        "hsl",
+                        "0",
+                        "0",
+                        "90"
+                      ]
+                    ]
+                  ],
+                  [
+                    ":font-size",
+                    "10"
+                  ],
+                  [
+                    ":text-shadow",
+                    [
+                      "str",
+                      "|0 0 2px black"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/css-color-sample",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstyle",
+          "css-controller",
+          [
+            "{}",
+            [
+              "|$0",
+              [
+                "{}",
+                [
+                  ":position",
+                  ":absolute"
+                ],
+                [
+                  ":top",
+                  "4"
+                ],
+                [
+                  ":left",
+                  "0"
+                ],
+                [
+                  ":color",
+                  ":white"
+                ],
+                [
+                  ":padding",
+                  "|4px 12px"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/css-controller",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstyle",
+          "css-shape",
+          [
+            "{}",
+            [
+              "|$0",
+              [
+                "merge",
+                "ui/row-middle",
+                [
+                  "{}",
+                  [
+                    ":color",
+                    ":black"
+                  ],
+                  [
+                    ":line-height",
+                    "|24px"
+                  ],
+                  [
+                    ":padding",
+                    "|4px 8px"
+                  ],
+                  [
+                    ":cursor",
+                    ":pointer"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/css-shape",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstyle",
+          "css-shapes-list",
+          [
+            "{}",
+            [
+              "|$0",
+              [
+                "{}",
+                [
+                  ":position",
+                  ":fixed"
+                ],
+                [
+                  ":z-index",
+                  "1001"
+                ],
+                [
+                  ":top",
+                  "44"
+                ],
+                [
+                  ":left",
+                  "120"
+                ],
+                [
+                  ":min-width",
+                  "40"
+                ],
+                [
+                  ":max-height",
+                  "|84vh"
+                ],
+                [
+                  ":padding",
+                  "|8px 0"
+                ],
+                [
+                  ":border-radius",
+                  "|4px"
+                ],
+                [
+                  ":z-index",
+                  "80"
+                ],
+                [
+                  ":overflow",
+                  ":auto"
+                ],
+                [
+                  ":padding-bottom",
+                  "100"
+                ],
+                [
+                  ":line-height",
+                  "|20px"
+                ],
+                [
+                  ":background-color",
+                  [
+                    "hsl",
+                    "0",
+                    "0",
+                    "100",
+                    [
+                      "Option",
+                      ":some",
+                      "0.8"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/css-shapes-list",
+        "js_ffi": null,
+        "schema": null,
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "get-index!",
+          [],
+          [
+            "let",
+            [
+              [
+                "v",
+                "@*index-cache"
+              ]
+            ],
+            [
+              "swap!",
+              "*index-cache",
+              "inc"
+            ],
+            "v"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/get-index!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Number"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "index->color",
+          [
+            "i"
+          ],
+          [
+            "match",
+            "i",
+            [
+              "0",
+              "|white"
+            ],
+            [
+              "1",
+              "|red"
+            ],
+            [
+              "2",
+              "|green"
+            ],
+            [
+              "3",
+              "|blue"
+            ],
+            [
+              "4",
+              "|#ff0"
+            ],
+            [
+              "5",
+              "|#f0f"
+            ],
+            [
+              "6",
+              "|#0ff"
+            ],
+            [
+              "_",
+              "|black"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.controller/index->color",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'String"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Number"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "comp-landscape",
+          [
+            "shapes"
+          ],
+          [
+            "if",
+            [
+              "empty?",
+              "shapes"
+            ],
+            [
+              "group",
+              [
+                "{}"
+              ]
+            ],
+            [
+              "let",
+              [
+                [
+                  "shape-list",
+                  [
+                    ".to-list",
+                    [
+                      ".distinct-values",
+                      "shapes"
+                    ]
+                  ]
+                ]
+              ],
+              [
+                "object",
+                [
+                  "{}",
+                  [
+                    ":draw-mode",
+                    ":triangles"
+                  ],
+                  [
+                    ":vertex-shader",
+                    [
+                      "inline-shader",
+                      "|shape.vert"
+                    ]
+                  ],
+                  [
+                    ":fragment-shader",
+                    [
+                      "inline-shader",
+                      "|shape.frag"
+                    ]
+                  ],
+                  [
+                    ":points",
+                    [
+                      "landscape-vertices",
+                      "shape-list"
+                    ]
+                  ],
+                  [
+                    ":attributes",
+                    [
+                      "{}",
+                      [
+                        ":color_index",
+                        [
+                          "landscape-colors",
+                          "shape-list"
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.landscape/comp-landscape",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'Map",
+                "'String",
+                "'app.schema/Shape"
+              ]
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'Map",
+              "'Tag",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "landscape-colors",
+          [
+            "shape-list"
+          ],
+          [
+            "concat",
+            "&",
+            [
+              "map",
+              "shape-list",
+              [
+                "fn",
+                [
+                  "shape"
+                ],
+                [
+                  "repeat",
+                  [
+                    ":color-type",
+                    "shape"
+                  ],
+                  "3"
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.landscape/landscape-colors",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'List",
+                "'app.schema/Shape"
+              ]
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'List",
+              "'Number"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "landscape-vertices",
+          [
+            "shape-list"
+          ],
+          [
+            "concat",
+            "&",
+            [
+              "map",
+              "shape-list",
+              "shape-vertices"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.landscape/landscape-vertices",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              [
+                "::",
+                "'List",
+                "'app.schema/Shape"
+              ]
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'List",
+              [
+                "::",
+                "'List",
+                "'Number"
+              ]
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "shape-vertices",
+          [
+            "shape"
+          ],
+          [
+            "[]",
+            [
+              ":p0",
+              "shape"
+            ],
+            [
+              ":p1",
+              "shape"
+            ],
+            [
+              ":p2",
+              "shape"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.comp.landscape/shape-vertices",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Shape"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'List",
+              [
+                "::",
+                "'List",
+                "'Number"
+              ]
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defmacro",
+          "inline-shader",
+          [
+            "file"
+          ],
+          [
+            "println",
+            "|inline shader file:",
+            "file"
+          ],
+          [
+            "read-file",
+            [
+              "str",
+              "|shaders/",
+              "file"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.config/inline-shader",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'Macro",
+          [
+            "{}",
+            [
+              ":capabilities",
+              [
+                "#{}",
+                ":fs-read",
+                ":log"
+              ]
+            ],
+            [
+              ":expansion",
+              [
+                "::",
+                "'Expr",
+                "'String"
+              ]
+            ],
+            [
+              ":required",
+              [
+                "[]",
+                "'Syntax"
+              ]
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defref",
+          "*store",
+          "schema/store"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/*store",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'Ref",
+          "'app.schema/Store"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "deftrait",
+          "CanvasHost",
+          [
+            ".get-context",
+            [
+              "::",
+              "'Fn",
+              [
+                "{}",
+                [
+                  ":args",
+                  [
+                    "[]",
+                    "'app.main/CanvasHost",
+                    "'String",
+                    "'JsObject"
+                  ]
+                ],
+                [
+                  ":return",
+                  [
+                    "::",
+                    "'JsNullish",
+                    "'JsObject"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": {
+          ":backend": {
+            "__edn_tag": "js"
+          },
+          ":kind": {
+            "__edn_tag": "external-object"
+          },
+          ":target": {
+            "__edn_tag": "browser"
+          }
+        },
+        "ffi_edn": "{} (:backend :js) (:kind :external-object) (:target :browser)",
+        "id": "app.main/CanvasHost",
+        "js_ffi": null,
+        "schema": "'Trait",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "canvas",
+          [
+            ".unwrap",
+            [
+              "query-selector",
+              "|canvas"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/canvas",
+        "js_ffi": null,
+        "schema": "'js-ffi.browser/DomElementHost",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "dispatch!",
+          [
+            "op",
+            "data"
+          ],
+          [
+            "when",
+            "dev?",
+            [
+              "js/console.log",
+              "|Dispatch:",
+              "op",
+              "data"
+            ]
+          ],
+          [
+            "let",
+            [
+              [
+                "op-id",
+                [
+                  "expect-string",
+                  "|nanoid",
+                  [
+                    "nanoid"
+                  ]
+                ]
+              ],
+              [
+                "op-time",
+                [
+                  "expect-number",
+                  "|Date.now",
+                  [
+                    "js/Date.now"
+                  ]
+                ]
+              ],
+              [
+                "next",
+                [
+                  "if",
+                  [
+                    "list?",
+                    "op"
+                  ],
+                  [
+                    "update-cursor",
+                    "@*store",
+                    [
+                      "decode-map-as",
+                      "op",
+                      [
+                        "::",
+                        "'List",
+                        "'Tag"
+                      ]
+                    ],
+                    "data"
+                  ],
+                  [
+                    "updater",
+                    "@*store",
+                    [
+                      "decode-map-as",
+                      "op",
+                      "'Tag"
+                    ],
+                    "data",
+                    "op-id",
+                    "op-time"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "when",
+              [
+                "not",
+                [
+                  "identical?",
+                  "next",
+                  "@*store"
+                ]
+              ],
+              [
+                "reset!",
+                "*store",
+                "next"
+              ]
+            ]
+          ],
+          "&unit"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/dispatch!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Dynamic",
+              "'Dynamic"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "main!",
+          [],
+          [
+            "if",
+            "dev?",
+            [
+              "load-console-formatter!"
+            ]
+          ],
+          [
+            "twgl/setDefaults",
+            [
+              "&js-object",
+              ":attribPrefix",
+              "|a_"
+            ]
+          ],
+          [
+            "inject-hud!"
+          ],
+          [
+            "reset-canvas-size!",
+            "canvas"
+          ],
+          [
+            "let",
+            [
+              [
+                "host",
+                [
+                  "js-cast",
+                  "canvas",
+                  "'app.main/CanvasHost"
+                ]
+              ],
+              [
+                "context",
+                [
+                  "host",
+                  ".get-context",
+                  "|webgl",
+                  [
+                    "&js-object",
+                    ":antialias",
+                    "true"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "if",
+              [
+                "js-present?",
+                "context"
+              ],
+              [
+                "reset!",
+                "*gl-context",
+                [
+                  "Option",
+                  ":some",
+                  "context"
+                ]
+              ],
+              [
+                "raise",
+                "|WebGL-context-unavailable"
+              ]
+            ]
+          ],
+          [
+            "render-app!"
+          ],
+          [
+            "render-control!"
+          ],
+          [
+            "start-control-loop!",
+            "10",
+            "on-control-event"
+          ],
+          [
+            "add-watch!",
+            "*store",
+            ":change",
+            [
+              "fn",
+              [
+                "v",
+                "_p"
+              ],
+              [
+                "render-app!"
+              ]
+            ]
+          ],
+          [
+            "set!",
+            "js/window.onresize",
+            [
+              "fn",
+              [
+                "event"
+              ],
+              [
+                "reset-canvas-size!",
+                "canvas"
+              ],
+              [
+                "render-app!"
+              ]
+            ]
+          ],
+          [
+            "setup-mouse-events!",
+            "canvas"
+          ],
+          "&unit"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/main!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "mount-target",
+          [
+            "query-mount-target"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/mount-target",
+        "js_ffi": null,
+        "schema": [
+          "::",
+          "'JsNullish",
+          "'respo.dom/DomElement"
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "query-mount-target",
+          [],
+          [
+            "let",
+            [
+              [
+                "document",
+                [
+                  "js-cast",
+                  "js/document",
+                  "'respo.dom/DomDocument"
+                ]
+              ]
+            ],
+            [
+              "document",
+              ".query-selector",
+              "|.controller"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/query-mount-target",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'JsNullish",
+              "'respo.dom/DomElement"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "reload!",
+          [],
+          [
+            "if",
+            [
+              "nil?",
+              "build-errors"
+            ],
+            [
+              "do",
+              [
+                "remove-watch!",
+                "*store",
+                ":change"
+              ],
+              [
+                "respo/clear-cache!"
+              ],
+              [
+                "add-watch!",
+                "*store",
+                ":change",
+                [
+                  "fn",
+                  [
+                    "v",
+                    "_p"
+                  ],
+                  [
+                    "render-app!"
+                  ]
+                ]
+              ],
+              [
+                "replace-control-loop!",
+                "10",
+                "on-control-event"
+              ],
+              [
+                "set!",
+                "js/window.onresize",
+                [
+                  "fn",
+                  [
+                    "event"
+                  ],
+                  [
+                    "reset-canvas-size!",
+                    "canvas"
+                  ],
+                  [
+                    "render-app!"
+                  ]
+                ]
+              ],
+              [
+                "setup-mouse-events!",
+                "canvas"
+              ],
+              [
+                "render-app!"
+              ],
+              [
+                "hud!",
+                "|ok~",
+                "|OK"
+              ]
+            ],
+            [
+              "hud!",
+              "|error",
+              "build-errors"
+            ]
+          ],
+          "&unit"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/reload!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "render-app!",
+          [],
+          [
+            "load-objects!",
+            [
+              "comp-container",
+              "@*store"
+            ],
+            "dispatch!"
+          ],
+          [
+            "paint-canvas!"
+          ],
+          [
+            "respo/render!",
+            "mount-target",
+            [
+              "comp-controller",
+              "@*store"
+            ],
+            [
+              "fn",
+              [
+                "action"
+              ],
+              [
+                "let",
+                [
+                  [
+                    "operation",
+                    [
+                      "respo-operation",
+                      "action"
+                    ]
+                  ]
+                ],
+                [
+                  "dispatch!",
+                  [
+                    ".unwrap",
+                    [
+                      "get",
+                      "operation",
+                      "0"
+                    ]
+                  ],
+                  [
+                    ".unwrap",
+                    [
+                      "get",
+                      "operation",
+                      "1"
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ],
+          "&unit"
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.main/render-app!",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'Unit"
+          ],
+          [
+            ":args",
+            [
+              "[]"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstruct",
+          "ColorChoice",
+          [
+            ":value",
+            "'Number"
+          ],
+          [
+            ":display",
+            "'respo.schema/Component"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/ColorChoice",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstruct",
+          "MovePoint",
+          [
+            ":id",
+            "'String"
+          ],
+          [
+            ":point",
+            "'Tag"
+          ],
+          [
+            ":position",
+            [
+              "::",
+              "'List",
+              "'Number"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/MovePoint",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstruct",
+          "RenameShape",
+          [
+            ":id",
+            "'String"
+          ],
+          [
+            ":name",
+            "'String"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/RenameShape",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstruct",
+          "Shape",
+          [
+            ":p0",
+            [
+              "::",
+              "'List",
+              "'Number"
+            ]
+          ],
+          [
+            ":p1",
+            [
+              "::",
+              "'List",
+              "'Number"
+            ]
+          ],
+          [
+            ":p2",
+            [
+              "::",
+              "'List",
+              "'Number"
+            ]
+          ],
+          [
+            ":color-type",
+            "'Number"
+          ],
+          [
+            ":name",
+            [
+              "::",
+              "'Option",
+              "'String"
+            ]
+          ],
+          [
+            ":id",
+            [
+              "::",
+              "'Option",
+              "'String"
+            ]
+          ],
+          [
+            ":index",
+            "'Number"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/Shape",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defstruct",
+          "Store",
+          [
+            ":shapes",
+            [
+              "::",
+              "'Map",
+              "'String",
+              "'app.schema/Shape"
+            ]
+          ],
+          [
+            ":states",
+            [
+              "::",
+              "'Map",
+              "'Tag",
+              "'Dynamic"
+            ]
+          ],
+          [
+            ":current-color-type",
+            "'Number"
+          ],
+          [
+            ":current-focus",
+            [
+              "::",
+              "'Option",
+              "'String"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/Store",
+        "js_ffi": null,
+        "schema": "'StructDef",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "shape",
+          [
+            "Shape",
+            ":p0",
+            [
+              "[]",
+              "0",
+              "0",
+              "0"
+            ],
+            ":p1",
+            [
+              "[]",
+              "0",
+              "0",
+              "0"
+            ],
+            ":p2",
+            [
+              "[]",
+              "0",
+              "0",
+              "0"
+            ],
+            ":color-type",
+            "0",
+            ":name",
+            [
+              "Option",
+              ":some",
+              "|"
+            ],
+            ":id",
+            [
+              "Option",
+              ":none"
+            ],
+            ":index",
+            "0"
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/shape",
+        "js_ffi": null,
+        "schema": "'app.schema/Shape",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "def",
+          "store",
+          [
+            "Store",
+            ":shapes",
+            [
+              "{}"
+            ],
+            ":states",
+            [
+              "{}"
+            ],
+            ":current-color-type",
+            "0",
+            ":current-focus",
+            [
+              "Option",
+              ":none"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.schema/store",
+        "js_ffi": null,
+        "schema": "'app.schema/Store",
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "focused-shape",
+          [
+            "store"
+          ],
+          [
+            "match",
+            [
+              ":current-focus",
+              "store"
+            ],
+            [
+              [
+                ":none"
+              ],
+              [
+                "Option",
+                ":none"
+              ]
+            ],
+            [
+              [
+                ":some",
+                "id"
+              ],
+              [
+                "get",
+                [
+                  ":shapes",
+                  "store"
+                ],
+                "id"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.updater/focused-shape",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'Option",
+              "'app.schema/Shape"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "respo-operation",
+          [
+            "action"
+          ],
+          [
+            "if",
+            [
+              "enum?",
+              "action"
+            ],
+            [
+              "match",
+              "action",
+              [
+                [
+                  ":states",
+                  "cursor",
+                  "state"
+                ],
+                [
+                  "[]",
+                  [
+                    "decode-map-as",
+                    "cursor",
+                    [
+                      "::",
+                      "'List",
+                      "'Tag"
+                    ]
+                  ],
+                  "state"
+                ]
+              ],
+              [
+                "_",
+                [
+                  "[]",
+                  [
+                    "decode-map-as",
+                    [
+                      ".unwrap",
+                      [
+                        "get",
+                        "action",
+                        "0"
+                      ]
+                    ],
+                    "'Tag"
+                  ],
+                  [
+                    ".unwrap-or",
+                    [
+                      "get",
+                      "action",
+                      "1"
+                    ],
+                    "nil"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "raise",
+              "|expected-respo-action-enum"
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.updater/respo-operation",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'Dynamic"
+            ]
+          ],
+          [
+            ":return",
+            [
+              "::",
+              "'List",
+              "'Dynamic"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "update-cursor",
+          [
+            "store",
+            "cursor",
+            "data"
+          ],
+          [
+            "assoc",
+            "store",
+            ":states",
+            [
+              "decode-map-as",
+              [
+                "update-state-tree",
+                [
+                  ":states",
+                  "store"
+                ],
+                "cursor",
+                "data"
+              ],
+              [
+                "::",
+                "'Map",
+                "'Tag",
+                "'Dynamic"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.updater/update-cursor",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'app.schema/Store"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store",
+              [
+                "::",
+                "'List",
+                "'Tag"
+              ],
+              "'Dynamic"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      },
+      {
+        "code": [
+          "defn",
+          "updater",
+          [
+            "store",
+            "op",
+            "data",
+            "op-id",
+            "op-time"
+          ],
+          [
+            "match",
+            "op",
+            [
+              ":color-type",
+              [
+                "assoc",
+                "store",
+                ":current-color-type",
+                [
+                  "decode-map-as",
+                  "data",
+                  "'Number"
+                ]
+              ]
+            ],
+            [
+              ":new-shape",
+              [
+                "let",
+                [
+                  [
+                    "shape",
+                    [
+                      "assoc",
+                      [
+                        "decode-map-as",
+                        "data",
+                        "schema/Shape"
+                      ],
+                      ":id",
+                      [
+                        "Option",
+                        ":some",
+                        "op-id"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "->",
+                  "store",
+                  [
+                    "assoc",
+                    ":current-focus",
+                    [
+                      "Option",
+                      ":some",
+                      "op-id"
+                    ]
+                  ],
+                  [
+                    "assoc",
+                    ":shapes",
+                    [
+                      "assoc",
+                      [
+                        ":shapes",
+                        "store"
+                      ],
+                      "op-id",
+                      "shape"
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              ":rename-shape",
+              [
+                "let",
+                [
+                  [
+                    "change",
+                    [
+                      "decode-map-as",
+                      "data",
+                      "schema/RenameShape"
+                    ]
+                  ],
+                  [
+                    "shapes",
+                    [
+                      ":shapes",
+                      "store"
+                    ]
+                  ],
+                  [
+                    "id",
+                    [
+                      ":id",
+                      "change"
+                    ]
+                  ],
+                  [
+                    "shape",
+                    [
+                      ".unwrap",
+                      [
+                        "get",
+                        "shapes",
+                        "id"
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "assoc",
+                  "store",
+                  ":shapes",
+                  [
+                    "assoc",
+                    "shapes",
+                    "id",
+                    [
+                      "assoc",
+                      "shape",
+                      ":name",
+                      [
+                        "Option",
+                        ":some",
+                        [
+                          ":name",
+                          "change"
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              ":move-point",
+              [
+                "let",
+                [
+                  [
+                    "change",
+                    [
+                      "decode-map-as",
+                      "data",
+                      "schema/MovePoint"
+                    ]
+                  ],
+                  [
+                    "shapes",
+                    [
+                      ":shapes",
+                      "store"
+                    ]
+                  ],
+                  [
+                    "id",
+                    [
+                      ":id",
+                      "change"
+                    ]
+                  ],
+                  [
+                    "shape",
+                    [
+                      ".unwrap",
+                      [
+                        "get",
+                        "shapes",
+                        "id"
+                      ]
+                    ]
+                  ],
+                  [
+                    "position",
+                    [
+                      ":position",
+                      "change"
+                    ]
+                  ],
+                  [
+                    "next",
+                    [
+                      "match",
+                      [
+                        ":point",
+                        "change"
+                      ],
+                      [
+                        ":p0",
+                        [
+                          "assoc",
+                          "shape",
+                          ":p0",
+                          "position"
+                        ]
+                      ],
+                      [
+                        ":p1",
+                        [
+                          "assoc",
+                          "shape",
+                          ":p1",
+                          "position"
+                        ]
+                      ],
+                      [
+                        ":p2",
+                        [
+                          "assoc",
+                          "shape",
+                          ":p2",
+                          "position"
+                        ]
+                      ],
+                      [
+                        "_",
+                        [
+                          "raise",
+                          "|unknown-shape-point"
+                        ]
+                      ]
+                    ]
+                  ]
+                ],
+                [
+                  "assoc",
+                  "store",
+                  ":shapes",
+                  [
+                    "assoc",
+                    "shapes",
+                    "id",
+                    "next"
+                  ]
+                ]
+              ]
+            ],
+            [
+              ":delete-shape",
+              [
+                "assoc",
+                "store",
+                ":shapes",
+                [
+                  "dissoc",
+                  [
+                    ":shapes",
+                    "store"
+                  ],
+                  [
+                    "decode-map-as",
+                    "data",
+                    "'String"
+                  ]
+                ]
+              ]
+            ],
+            [
+              ":reset-color-type",
+              [
+                "match",
+                [
+                  "focused-shape",
+                  "store"
+                ],
+                [
+                  [
+                    ":none"
+                  ],
+                  "store"
+                ],
+                [
+                  [
+                    ":some",
+                    "shape"
+                  ],
+                  [
+                    "let",
+                    [
+                      [
+                        "id",
+                        [
+                          ".unwrap",
+                          [
+                            ":id",
+                            "shape"
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      "assoc",
+                      "store",
+                      ":shapes",
+                      [
+                        "assoc",
+                        [
+                          ":shapes",
+                          "store"
+                        ],
+                        "id",
+                        [
+                          "assoc",
+                          "shape",
+                          ":color-type",
+                          [
+                            ":current-color-type",
+                            "store"
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ],
+            [
+              ":focus-to",
+              [
+                "assoc",
+                "store",
+                ":current-focus",
+                [
+                  "Option",
+                  ":some",
+                  [
+                    "decode-map-as",
+                    "data",
+                    "'String"
+                  ]
+                ]
+              ]
+            ],
+            [
+              "_",
+              [
+                "do",
+                [
+                  "js/console.warn",
+                  "|unknown op",
+                  "op"
+                ],
+                "store"
+              ]
+            ]
+          ]
+        ],
+        "doc": "",
+        "examples": [],
+        "ffi": null,
+        "ffi_edn": null,
+        "id": "app.updater/updater",
+        "js_ffi": null,
+        "schema": [
+          "{}",
+          [
+            ":kind",
+            ":fn"
+          ],
+          [
+            ":return",
+            "'app.schema/Store"
+          ],
+          [
+            ":args",
+            [
+              "[]",
+              "'app.schema/Store",
+              "'Tag",
+              "'Dynamic",
+              "'String",
+              "'Number"
+            ]
+          ],
+          [
+            ":features",
+            [
+              "#{}",
+              ":js-ffi"
+            ]
+          ]
+        ],
+        "tags": [],
+        "tests": []
+      }
+    ]
+  },
+  "manifests": {
+    "deps.cirru": "{} (:calcit-version |0.30.1) (:version |0.0.1)\n  :dependencies $ {}\n    |Triadica/triadica-space |0.0.44\n    |Triadica/touch-control |0.0.32\n    |Respo/respo.calcit |0.16.124\n    |Respo/respo-ui.calcit |0.8.0\n    |Respo/alerts.calcit |0.10.57\n    |calcit-lang/js-ffi |0.2.5\n",
+    "package.json": "{\n  \"name\": \"@triadica/triangles-sketch\",\n  \"version\": \"0.0.1\",\n  \"packageManager\": \"yarn@4.18.0\",\n  \"main\": \"index.js\",\n  \"repository\": \"git@github.com:Triadica/triangles-sketch.git\",\n  \"author\": \"tiye <jiyinyiyong@gmail.com>\",\n  \"license\": \"MIT\",\n  \"devDependencies\": {\n    \"bottom-tip\": \"^0.1.5\",\n    \"vite\": \"8.3.4\"\n  },\n  \"dependencies\": {\n    \"@calcit/procs\": \"0.30.1\",\n    \"@calcit/std\": \"0.0.3\",\n    \"mobile-detect\": \"^1.4.5\",\n    \"nanoid\": \"^4.0.0\",\n    \"twgl.js\": \"^5.5.3\"\n  }\n}\n",
+    ".yarnrc.yml": "nodeLinker: node-modules\n"
+  }
+}
