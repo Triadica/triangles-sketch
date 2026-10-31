@@ -4,5 +4,5 @@
     |Triadica/touch-control |0.0.35
     |Respo/respo.calcit |0.17.1
     |Respo/respo-ui.calcit |0.9.0
-    |Respo/alerts.calcit |0.11.0-alpha.4
+    |Respo/alerts.calcit |0.11.0-alpha.5
     |calcit-lang/js-ffi |0.2.9
