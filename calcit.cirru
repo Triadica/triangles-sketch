@@ -6,7 +6,7 @@
     {} (:description |) (:init-fn 'app.main/main!) (:mode :js) (:reload-fn 'app.main/reload!) (:target :browser)
       :feature-policy $ {}
       :modules $ [] |touch-control/ |respo.calcit/ |triadica-space/ |respo-ui.calcit/ |alerts.calcit/ |js-ffi/
-      :type-slots $ {} $ :dispatch-op |app.schema/DispatchOp
+      :type-slots $ {} $ :dispatch-op 'app.schema/Op
   :files $ {}
     'app.comp.container $ %{} 'FileEntry
       :defs $ {}
@@ -69,7 +69,7 @@
           :schema $ quote $ Ref Number
         'actions $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def actions
-            [] $ {} (:value :delete) (:display |DELETE)
+            [] $ :: :item :delete |DELETE
           :examples $ []
         'assemble-new-shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn assemble-new-shape (color-type)
@@ -117,10 +117,13 @@
             let
                 states $ :states store
                 cursor $ []
-                raw-state $ .unwrap-or (get states :data) nil
-                state $ if (nil? raw-state)
-                  {} $ :show-list? false
-                  decode-map-as raw-state $ :: 'Map 'Tag 'Bool
+                state $ match (get states :data)
+                  (:some raw)
+                    if (nil? raw)
+                      {} $ :show-list? false
+                      decode-map-as raw $ Map Tag Bool
+                  (:none)
+                    {} $ :show-list? false
                 show-list? $ .unwrap-or (get state :show-list?) false
                 focused $ focused-shape store
                 color-type $ :current-color-type store
@@ -136,10 +139,10 @@
                               {}
                                 :style $ {} $ :cursor :pointer
                                 :on-click $ fn (e d!)
-                                  hint-fn $ Fn Dynamic
-                                    Fn Enum $ -> Unit
+                                  hint-fn $ Fn respo.schema/RespoEvent
+                                    Fn app.schema/Op $ -> Unit
                                     -> Unit
-                                  d! $ :: :color-type $ :value info
+                                  d! $ app.schema/Op :color-type $ :value info
                                   on-close d!
                                   , &unit
                               :display info
@@ -152,8 +155,8 @@
                             :delete $ match (:current-focus store)
                               (:none) &unit
                               (:some id)
-                                d! $ :: :delete-shape id
-                            :reset-color-type $ d! $ :: :reset-color-type
+                                d! $ app.schema/Op :delete-shape id
+                            :reset-color-type $ d! $ app.schema/Op :reset-color-type
                             _ &unit
                         _ $ raise |expected-modal-menu-item
               div
@@ -161,8 +164,8 @@
                 span
                   {} (:class-name css-action) (:style ui/row-middle)
                     :on-click $ fn (e d!)
-                      hint-fn $ Fn Dynamic
-                        Fn Enum $ -> Unit
+                      hint-fn $ Fn respo.schema/RespoEvent
+                        Fn app.schema/Op $ -> Unit
                         -> Unit
                       .show colors-plugin d!
                       , &unit
@@ -170,24 +173,23 @@
                   comp-color-sample color-type
                 span $ {} (:class-name css-action) (:inner-text |List)
                   :on-click $ fn (e d!)
-                    d! $ :: :states cursor $ assoc state :show-list? (not show-list?)
+                    d! $ app.schema/Op :states cursor $ assoc state :show-list? (not show-list?)
                 span $ {} (:class-name css-action) (:inner-text |Add)
                   :on-click $ fn (e d!)
-                    d! $ :: :new-shape $ .to-map (assemble-new-shape color-type)
+                    d! $ app.schema/Op :new-shape $ assemble-new-shape color-type
                 span $ {} (:class-name css-action) (:inner-text |Duplicate)
                   :on-click $ fn (e d!)
                     match focused
                       (:none) &unit
                       (:some shape)
-                        d! $ :: :new-shape $ .to-map
-                          assoc shape :index $ get-index!
+                        d! $ app.schema/Op :new-shape $ assoc shape :index (get-index!)
                 span $ {} (:class-name css-action) (:inner-text |color!)
                   :on-click $ fn (e d!)
-                    d! $ :: :reset-color-type
+                    d! $ app.schema/Op :reset-color-type
                 span $ {} (:class-name css-action) (:inner-text |more...)
                   :on-click $ fn (e d!)
-                    hint-fn $ Fn Dynamic
-                      Fn Enum $ -> Unit
+                    hint-fn $ Fn respo.schema/RespoEvent
+                      Fn app.schema/Op $ -> Unit
                       -> Unit
                     .show more-actions-plugin d!
                     , &unit
@@ -219,12 +221,12 @@
                           {} $ :background-color $ hsl 200 0 90
                           {}
                         :on-click $ fn (e d!)
-                          d! $ :: :focus-to shape-id
+                          d! $ app.schema/Op :focus-to shape-id
                       <>
                         str $ :index shape
                         {} (:font-family ui/font-code)
                           :color $ hsl 0 0 60
-                      =< 8 nil
+                      space-x 8
                       comp-color-sample $ :color-type shape
           :examples $ []
           :schema $ quote $ Fn (Map String app.schema/Shape) (Option String) (-> respo.schema/Component)
@@ -272,7 +274,7 @@
           :require (respo-ui.core :as ui)
             respo-ui.core :refer $ hsl
             respo.core :refer $ defcomp defeffect <> >> div button textarea span input list->
-            respo.comp.space :refer $ =<
+            respo.comp.space :refer $ space-x
             respo.css :refer $ defstyle
             respo-ui.css :as css
             respo-alerts.core :refer $ use-modal-menu use-modal
@@ -339,11 +341,22 @@
           :schema $ quote $ Ref app.schema/Store
         'CanvasHost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait CanvasHost
-            .get-context $ quote $ Fn app.main/CanvasHost String JsObject
-              -> $ JsNullish JsObject
+            .get-context $ Fn app.main/CanvasHost String JsObject $ -> (JsNullish JsObject)
           :examples $ []
           :ffi $ {} (:backend :js) (:kind :external-object) (:target :browser)
           :schema $ quote Trait
+        'apply-op! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn apply-op! (action)
+            let
+                store @*store
+                op-id $ expect-string |nanoid $ nanoid
+                next $ updater store action op-id
+              when
+                not $ identical? next store
+                reset! *store next
+            , &unit
+          :examples $ []
+          :schema $ quote $ Fn app.schema/Op (-> Unit) (:features :js-ffi)
         'canvas $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def canvas
             .unwrap $ query-selector |canvas
@@ -351,21 +364,31 @@
           :schema $ quote js-ffi.browser/DomElementHost
         'dispatch! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch! (op data)
-            when dev? $ js/console.log |Dispatch: op data
-            let
-                op-id $ expect-string |nanoid $ nanoid
-                op-time $ expect-number |Date.now $ js/Date.now
-                next $ if (list? op)
-                  update-cursor @*store
-                    decode-map-as op $ :: 'List 'Tag
-                    , data
-                  updater @*store (decode-map-as op 'Tag) data op-id op-time
-              when
-                not $ identical? next @*store
-                reset! *store next
+            if (list? op)
+              apply-op! $ schema/Op :states
+                decode-map-as op $ List respo.schema/CoordKey
+                , data
+              if (tag? op)
+                match (decode-map-as op 'Tag)
+                  :move-point $ apply-op! $ schema/Op :move-point (decode-map-as data schema/MovePoint)
+                  _ $ js/console.warn "|unknown scene op" op
+                js/console.warn "|unknown scene op" op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn Dynamic Dynamic (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn Operation Payload (-> Unit) (:generics Operation Payload) (:features :js-ffi)
+        'dispatch-view! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn dispatch-view! (raw)
+            match (try-decode-map-as raw schema/Op)
+              (:ok op) (apply-op! op)
+              (:err _)
+                match raw
+                  (:states cursor data)
+                    apply-op! $ schema/Op :states
+                      decode-map-as cursor $ List respo.schema/CoordKey
+                      , data
+                  _ $ raise |expected-respo-action
+          :examples $ []
+          :schema $ quote $ Fn Raw (-> Unit) (:generics Raw)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             if dev? $ load-console-formatter!
@@ -388,18 +411,10 @@
           :examples $ []
           :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
         'mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ def mount-target (query-mount-target)
+          :code $ quote $ def mount-target
+            .unwrap $ respo-browser/query-selector |.controller
           :examples $ []
-          :schema $ quote $ JsNullish respo.dom/DomElement
-        'query-mount-target $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn query-mount-target ()
-            let
-                document $ js-cast js/document 'respo.dom/DomDocument
-              document .query-selector |.controller
-          :examples $ []
-          :schema $ quote $ Fn
-            -> $ JsNullish respo.dom/DomElement
-            :features :js-ffi
+          :schema $ quote respo.dom/DomElement
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! ()
             if (nil? build-errors)
@@ -418,15 +433,9 @@
           :code $ quote $ defn render-app! ()
             load-objects! (comp-container @*store) dispatch!
             paint-canvas!
-            respo/render! mount-target (comp-controller @*store)
-              fn (action)
-                hint-fn $ Fn Enum $ -> Unit
-                let
-                    operation $ respo-operation action
-                  dispatch!
-                    .unwrap $ get operation 0
-                    .unwrap $ get operation 1
-                , &unit
+            respo/render-with! mount-target
+              fn () $ comp-controller @*store
+              , dispatch-view!
             , &unit
           :examples $ []
           :schema $ quote $ Fn (-> Unit)
@@ -444,48 +453,55 @@
             app.comp.controller :refer $ comp-controller
             triadica.alias :refer $ group
             app.schema :as schema
-            app.updater :refer $ updater update-cursor respo-operation
+            app.updater :refer $ updater
             |nanoid :refer $ nanoid
-            js-ffi.contract :refer $ expect-string expect-number
+            js-ffi.contract :refer $ expect-string
+            respo.ffi.browser :as respo-browser
             js-ffi.browser :refer $ query-selector
     'app.schema $ %{} 'FileEntry
       :defs $ {}
         'ColorChoice $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct ColorChoice (:value 'Number) (:display 'respo.schema/Component)
+          :code $ quote $ defstruct ColorChoice (:value Number) (:display respo.schema/Component)
           :examples $ []
           :schema $ quote StructDef
-        'DispatchOp $ %{} 'CodeEntry
-          :doc "|Respo/Alerts dispatch boundary is an open Enum. This representative value binds the entry type slot without claiming nominal identity. Actual operations still pass respo-operation and the existing updater field decoders; it is not the application store or an event default."
-          :code $ quote $ def DispatchOp
-            :: :states ([]) ({})
-          :examples $ []
-          :schema $ quote Enum
         'MovePoint $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct MovePoint (:id 'String) (:point 'Tag)
-            :position $ quote $ List Number
+          :code $ quote $ defstruct MovePoint (:id String) (:point Tag)
+            :position $ List Number
           :examples $ []
           :schema $ quote StructDef
+        'Op $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defenum Op
+            :states (List respo.schema/CoordKey) Dynamic
+            :color-type Number
+            :new-shape app.schema/Shape
+            :rename-shape app.schema/RenameShape
+            :move-point app.schema/MovePoint
+            :delete-shape String
+            :reset-color-type
+            :focus-to String
+          :examples $ []
+          :schema $ quote EnumDef
         'RenameShape $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct RenameShape (:id 'String) (:name 'String)
+          :code $ quote $ defstruct RenameShape (:id String) (:name String)
           :examples $ []
           :schema $ quote StructDef
         'Shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Shape
-            :p0 $ quote $ List Number
-            :p1 $ quote $ List Number
-            :p2 $ quote $ List Number
-            :color-type 'Number
-            :name $ quote $ Option String
-            :id $ quote $ Option String
-            :index 'Number
+            :p0 $ List Number
+            :p1 $ List Number
+            :p2 $ List Number
+            :color-type Number
+            :name $ Option String
+            :id $ Option String
+            :index Number
           :examples $ []
           :schema $ quote StructDef
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
-            :shapes $ quote $ Map String app.schema/Shape
-            :states $ quote $ Map Tag Dynamic
-            :current-color-type 'Number
-            :current-focus $ quote $ Option String
+            :shapes $ Map String app.schema/Shape
+            :states $ Map Tag Dynamic
+            :current-color-type Number
+            :current-focus $ Option String
           :examples $ []
           :schema $ quote StructDef
         'shape $ %{} 'CodeEntry (:doc |)
@@ -511,69 +527,52 @@
           :examples $ []
           :schema $ quote $ Fn app.schema/Store
             -> $ Option app.schema/Shape
-        'respo-operation $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn respo-operation (action)
-            if (enum? action)
-              match action
-                (:states cursor state)
-                  []
-                    decode-map-as cursor $ :: 'List 'Tag
-                    , state
-                _ $ []
-                  decode-map-as
-                    .unwrap $ get action 0
-                    , 'Tag
-                  .unwrap-or (get action 1) nil
-              raise |expected-respo-action-enum
-          :examples $ []
-          :schema $ quote $ Fn Dynamic
-            -> $ List Dynamic
-        'update-cursor $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn update-cursor (store cursor data)
-            assoc store :states $ decode-map-as
-              update-state-tree (:states store) cursor data
-              :: 'Map 'Tag 'Dynamic
-          :examples $ []
-          :schema $ quote $ Fn app.schema/Store (List Tag) Dynamic (-> app.schema/Store) (:features :js-ffi)
         'updater $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn updater (store op data op-id op-time)
+          :code $ quote $ defn updater (store op op-id)
             match op
-              :color-type $ assoc store :current-color-type $ decode-map-as data 'Number
-              :new-shape $ let
-                  shape $ assoc (decode-map-as data schema/Shape) :id $ Option :some op-id
-                -> store
-                  assoc :current-focus $ Option :some op-id
-                  assoc :shapes $ assoc (:shapes store) op-id shape
-              :rename-shape $ let
-                  change $ decode-map-as data schema/RenameShape
-                  shapes $ :shapes store
-                  id $ :id change
-                  shape $ .unwrap $ get shapes id
-                assoc store :shapes $ assoc shapes id $ assoc shape :name
-                  Option :some $ :name change
-              :move-point $ let
-                  change $ decode-map-as data schema/MovePoint
-                  shapes $ :shapes store
-                  id $ :id change
-                  shape $ .unwrap $ get shapes id
-                  position $ :position change
-                  next $ match (:point change)
-                    :p0 $ assoc shape :p0 position
-                    :p1 $ assoc shape :p1 position
-                    :p2 $ assoc shape :p2 position
-                    _ $ raise |unknown-shape-point
-                assoc store :shapes $ assoc shapes id next
-              :delete-shape $ assoc store :shapes $ dissoc (:shapes store) (decode-map-as data 'String)
-              :reset-color-type $ match (focused-shape store)
-                (:none) store
-                (:some shape)
-                  let
-                      id $ .unwrap $ :id shape
-                    assoc store :shapes $ assoc (:shapes store) id $ assoc shape :color-type (:current-color-type store)
-              :focus-to $ assoc store :current-focus $ Option :some (decode-map-as data 'String)
-              _ $ do (js/console.warn "|unknown op" op) store
+              (:states cursor data)
+                assoc store :states $ decode-map-as
+                  update-state-tree (:states store) cursor data
+                  Map Tag Dynamic
+              (:color-type color) (assoc store :current-color-type color)
+              (:new-shape candidate)
+                let
+                    shape $ assoc candidate :id $ Option :some op-id
+                  -> store
+                    assoc :current-focus $ Option :some op-id
+                    assoc :shapes $ assoc (:shapes store) op-id shape
+              (:rename-shape change)
+                let
+                    shapes $ :shapes store
+                    id $ :id change
+                    shape $ .unwrap $ get shapes id
+                  assoc store :shapes $ assoc shapes id $ assoc shape :name
+                    Option :some $ :name change
+              (:move-point change)
+                let
+                    shapes $ :shapes store
+                    id $ :id change
+                    shape $ .unwrap $ get shapes id
+                    position $ :position change
+                    next $ match (:point change)
+                      :p0 $ assoc shape :p0 position
+                      :p1 $ assoc shape :p1 position
+                      :p2 $ assoc shape :p2 position
+                      _ $ raise |unknown-shape-point
+                  assoc store :shapes $ assoc shapes id next
+              (:delete-shape id)
+                assoc store :shapes $ dissoc (:shapes store) id
+              (:reset-color-type)
+                match (focused-shape store)
+                  (:none) store
+                  (:some shape)
+                    let
+                        id $ .unwrap $ :id shape
+                      assoc store :shapes $ assoc (:shapes store) id $ assoc shape :color-type (:current-color-type store)
+              (:focus-to id)
+                assoc store :current-focus $ Option :some id
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store Tag Dynamic String Number (-> app.schema/Store) (:features :js-ffi)
+          :schema $ quote $ Fn app.schema/Store app.schema/Op String (-> app.schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
