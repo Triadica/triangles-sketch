@@ -25,15 +25,15 @@
                       comp-drag-point
                         {} $ :position $ :p0 focused
                         fn (p d!)
-                          d! :move-point $ {} (:id focused-id) (:point :p0) (:position p)
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p0 :position p
                       comp-drag-point
                         {} $ :position $ :p1 focused
                         fn (p d!)
-                          d! :move-point $ {} (:id focused-id) (:point :p1) (:position p)
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p1 :position p
                       comp-drag-point
                         {} $ :position $ :p2 focused
                         fn (p d!)
-                          d! :move-point $ {} (:id focused-id) (:point :p2) (:position p)
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p2 :position p
                       comp-hint-line focused
           :examples $ []
           :schema $ quote $ Fn app.schema/Store
