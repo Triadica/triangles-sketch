@@ -208,7 +208,7 @@
               ->
                 .to-list $ .distinct-values shapes
                 .sort-by $ fn (shape)
-                  hint-fn $ Fn app.schema/Shape $ -> Number
+                  hint-fn $ Fn Shape $ -> Number
                   :index shape
                 map $ fn (shape)
                   let
@@ -235,6 +235,7 @@
           :code $ quote $ defstyle css-action
             {} $ |$0 $ {} (:margin "|0 8px") (:cursor :pointer) (:user-select :none)
           :examples $ []
+          :schema $ quote String
         'css-color-sample $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-color-sample
             {} $ |$0 $ merge ui/center
@@ -243,20 +244,24 @@
                 :font-size 10
                 :text-shadow $ str "|0 0 2px black"
           :examples $ []
+          :schema $ quote String
         'css-controller $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-controller
             {} $ |$0 $ {} (:position :absolute) (:top 4) (:left 0) (:color :white) (:padding "|4px 12px")
           :examples $ []
+          :schema $ quote String
         'css-shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-shape
             {} $ |$0 $ merge ui/row-middle
               {} (:color :black) (:line-height |24px) (:padding "|4px 8px") (:cursor :pointer)
           :examples $ []
+          :schema $ quote String
         'css-shapes-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-shapes-list
             {} $ |$0 $ {} (:position :fixed) (:z-index 1001) (:top 44) (:left 120) (:min-width 40) (:max-height |84vh) (:padding "|8px 0") (:border-radius |4px) (:z-index 80) (:overflow :auto) (:padding-bottom 100) (:line-height |20px)
               :background-color $ hsl 0 0 100 $ Some 0.8
           :examples $ []
+          :schema $ quote String
         'get-index! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn get-index! ()
             let
