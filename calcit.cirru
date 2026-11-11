@@ -85,9 +85,9 @@
                   &v+
                     &v+ p0 $ v-scale upward 100
                     v-scale forward 20
-                  , :color-type color-type :index (get-index!) :id (Option :none) :name $ Option :none
+                  , :color-type color-type :index (get-index!) :id None :name None
           :examples $ []
-          :schema $ quote $ Fn Number (-> app.schema/Shape)
+          :schema $ quote $ Fn Number (-> Shape)
         'color-types $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def color-types
             []
@@ -100,7 +100,7 @@
               ColorChoice :value 6 :display $ comp-color-sample 6
               ColorChoice :value 7 :display $ comp-color-sample 7
           :examples $ []
-          :schema $ quote $ List app.schema/ColorChoice
+          :schema $ quote $ List ColorChoice
         'comp-color-sample $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-color-sample (i)
             div
@@ -119,9 +119,10 @@
                 cursor $ []
                 state $ match (get states :data)
                   (:some raw)
-                    if (nil? raw)
-                      {} $ :show-list? false
-                      decode-map-as raw $ Map Tag Bool
+                    match raw
+                      (Map fields)
+                        decode-map-as fields $ Map Tag Bool
+                      (Bool _) (raise |invalid-controller-state)
                   (:none)
                     {} $ :show-list? false
                 show-list? $ .unwrap-or (get state :show-list?) false
@@ -229,7 +230,7 @@
                       space-x 8
                       comp-color-sample $ :color-type shape
           :examples $ []
-          :schema $ quote $ Fn (Map String app.schema/Shape) (Option String) (-> respo.schema/Component)
+          :schema $ quote $ Fn (Map String Shape) (Option String) (-> respo.schema/Component)
         'css-action $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-action
             {} $ |$0 $ {} (:margin "|0 8px") (:cursor :pointer) (:user-select :none)
@@ -254,7 +255,7 @@
         'css-shapes-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstyle css-shapes-list
             {} $ |$0 $ {} (:position :fixed) (:z-index 1001) (:top 44) (:left 120) (:min-width 40) (:max-height |84vh) (:padding "|8px 0") (:border-radius |4px) (:z-index 80) (:overflow :auto) (:padding-bottom 100) (:line-height |20px)
-              :background-color $ hsl 0 0 100 $ Option :some 0.8
+              :background-color $ hsl 0 0 100 $ Some 0.8
           :examples $ []
         'get-index! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn get-index! ()
@@ -338,7 +339,7 @@
         '*store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *store schema/store
           :examples $ []
-          :schema $ quote $ Ref app.schema/Store
+          :schema $ quote $ Ref schema/Store
         'CanvasHost $ %{} 'CodeEntry (:doc |)
           :code $ quote $ deftrait CanvasHost
             .get-context $ Fn app.main/CanvasHost String JsObject $ -> (JsNullish JsObject)
@@ -356,7 +357,7 @@
                 reset! *store next
             , &unit
           :examples $ []
-          :schema $ quote $ Fn app.schema/Op (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn schema/Op (-> Unit) (:features :js-ffi)
         'canvas $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def canvas
             .unwrap $ query-selector |canvas
@@ -367,7 +368,7 @@
             if (list? op)
               apply-op! $ schema/Op :states
                 decode-map-as op $ List respo.schema/CoordKey
-                , data
+                decode-map-as data $ Map Tag Bool
               if (tag? op)
                 match (decode-map-as op 'Tag)
                   :move-point $ apply-op! $ schema/Op :move-point (decode-map-as data schema/MovePoint)
@@ -385,7 +386,7 @@
                   (:states cursor data)
                     apply-op! $ schema/Op :states
                       decode-map-as cursor $ List respo.schema/CoordKey
-                      , data
+                      decode-map-as data $ Map Tag Bool
                   _ $ raise |expected-respo-action
           :examples $ []
           :schema $ quote $ Fn Raw (-> Unit) (:generics Raw)
@@ -399,7 +400,7 @@
                 host $ js-cast canvas 'app.main/CanvasHost
                 context $ host .get-context |webgl $ &js-object :antialias true
               if (js-present? context)
-                reset! *gl-context $ Option :some context
+                reset! *gl-context $ Some context
                 raise |WebGL-context-unavailable
             render-app!
             render-control!
@@ -464,6 +465,10 @@
           :code $ quote $ defstruct ColorChoice (:value Number) (:display respo.schema/Component)
           :examples $ []
           :schema $ quote StructDef
+        'ControlNode $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion ControlNode Bool (Map respo.schema/CoordKey ControlNode)
+          :examples $ []
+          :schema $ quote UnionDef
         'MovePoint $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct MovePoint (:id String) (:point Tag)
             :position $ List Number
@@ -471,7 +476,7 @@
           :schema $ quote StructDef
         'Op $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defenum Op
-            :states (List respo.schema/CoordKey) Dynamic
+            :states (List respo.schema/CoordKey) (Map Tag Bool)
             :color-type Number
             :new-shape app.schema/Shape
             :rename-shape app.schema/RenameShape
@@ -499,21 +504,21 @@
         'Store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defstruct Store
             :shapes $ Map String app.schema/Shape
-            :states $ Map Tag Dynamic
+            :states $ Map Tag app.schema/ControlNode
             :current-color-type Number
             :current-focus $ Option String
           :examples $ []
           :schema $ quote StructDef
         'shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def shape
-            Shape :p0 ([] 0 0 0) :p1 ([] 0 0 0) :p2 ([] 0 0 0) :color-type 0 :name (Option :some |) :id (Option :none) :index 0
+            Shape :p0 ([] 0 0 0) :p1 ([] 0 0 0) :p2 ([] 0 0 0) :color-type 0 :name (Some |) :id None :index 0
           :examples $ []
-          :schema $ quote app.schema/Shape
+          :schema $ quote Shape
         'store $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def store
-            Store :shapes ({}) :states ({}) :current-color-type 0 :current-focus $ Option :none
+            Store :shapes ({}) :states ({}) :current-color-type 0 :current-focus None
           :examples $ []
-          :schema $ quote app.schema/Store
+          :schema $ quote Store
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.schema
     'app.updater $ %{} 'FileEntry
@@ -521,25 +526,25 @@
         'focused-shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn focused-shape (store)
             match (:current-focus store)
-              (:none) (Option :none)
+              (:none) None
               (:some id)
                 get (:shapes store) id
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store
-            -> $ Option app.schema/Shape
+          :schema $ quote $ Fn schema/Store
+            -> $ Option schema/Shape
         'updater $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn updater (store op op-id)
             match op
               (:states cursor data)
                 assoc store :states $ decode-map-as
                   update-state-tree (:states store) cursor data
-                  Map Tag Dynamic
+                  Map Tag app.schema/ControlNode
               (:color-type color) (assoc store :current-color-type color)
               (:new-shape candidate)
                 let
-                    shape $ assoc candidate :id $ Option :some op-id
+                    shape $ assoc candidate :id $ Some op-id
                   -> store
-                    assoc :current-focus $ Option :some op-id
+                    assoc :current-focus $ Some op-id
                     assoc :shapes $ assoc (:shapes store) op-id shape
               (:rename-shape change)
                 let
@@ -547,7 +552,7 @@
                     id $ :id change
                     shape $ .unwrap $ get shapes id
                   assoc store :shapes $ assoc shapes id $ assoc shape :name
-                    Option :some $ :name change
+                    Some $ :name change
               (:move-point change)
                 let
                     shapes $ :shapes store
@@ -570,9 +575,9 @@
                         id $ .unwrap $ :id shape
                       assoc store :shapes $ assoc (:shapes store) id $ assoc shape :color-type (:current-color-type store)
               (:focus-to id)
-                assoc store :current-focus $ Option :some id
+                assoc store :current-focus $ Some id
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store app.schema/Op String (-> app.schema/Store)
+          :schema $ quote $ Fn schema/Store schema/Op String (-> schema/Store)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require

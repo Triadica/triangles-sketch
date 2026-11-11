@@ -8,9 +8,9 @@
 
 https://github.com/Triadica/triadica-workflow
 
-### Calcit 0.40.0 使用说明
+### Calcit 0.41.0 使用说明
 
-请同时使用正式 Calcit 与 `@calcit/procs` 0.40.0，配套 Space 0.0.49、
+请同时使用正式 Calcit 与 `@calcit/procs` 0.41.0，配套 Space 0.0.49、
 Touch Control 0.0.39、Respo 0.19.5、UI 0.15.2、Alerts 0.14.2 和 JS FFI 0.2.13。
 重装依赖并重新生成 JS。原画布、形状控件、颜色与删除弹窗的操作方式沿用原版。
 
@@ -25,7 +25,7 @@ Alerts 发出的旧状态事件在 Respo 入口解码后使用同一状态更新
 
 隐藏列表的 `if` 补上空文本分支，避免把隐式 nil 作为 UI 子节点。shader、数据模型、原 HUD 和部署路径保持；旧版本运行行为不以新版宏的行为倒推。原项目无附带测试，本轮全部 267 定义、完整 strict（passed 且 diagnostics 为空）、Caps/toolchain、immutable 和构建通过，本轮实际交互验收范围见下文，不将静态检查冒充所有 WebGL/拖点/触控验收。`List<Number>` 仍不证明长度为三；上游开放几何合同见 [Space #67](https://github.com/Triadica/triadica-space/issues/67)，本轮不宣称已解决。
 
-使用 Node.js 24、Yarn 4.18.0 和 deps.cirru 当前声明的 Calcit 0.40.0；npm 解析遵循一小时发布等待，无单包豁免。保留原完整类型门禁，不添加强转、验证脚本、预算豁免或测试框架。移除冗余的 `--strict-types` 参数，0.32.1 默认即执行严格检查，没有关闭严格诊断。
+使用 Node.js 24、Yarn 4.18.0 和 deps.cirru 当前声明的 Calcit 0.41.0；npm 解析遵循一小时发布等待，无单包豁免。保留原完整类型门禁，不添加强转、验证脚本、预算豁免或测试框架。移除冗余的 `--strict-types` 参数，0.32.1 默认即执行严格检查，没有关闭严格诊断。
 
 ```sh
 corepack enable
