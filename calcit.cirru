@@ -89,7 +89,7 @@
                     v-scale forward 20
                   , :color-type color-type :index (get-index!) :id None :name None
           :examples $ []
-          :schema $ quote $ Fn Number (-> Shape)
+          :schema $ quote $ Fn Number (-> Shape) (:features :state)
         'color-types $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def color-types
             []
@@ -202,7 +202,7 @@
                   comp-shapes-list (:shapes store) (:current-focus store)
                   <> |
           :examples $ []
-          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component)
+          :schema $ quote $ Fn app.schema/Store (-> respo.schema/Component) (:features :state)
         'comp-shapes-list $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defcomp comp-shapes-list (shapes focused-id)
             list->
@@ -271,7 +271,7 @@
               swap! *index-cache inc
               , v
           :examples $ []
-          :schema $ quote $ Fn (-> Number)
+          :schema $ quote $ Fn (-> Number) (:features :state)
         'index->color $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn index->color (i)
             match i (0 |white) (1 |red) (2 |green) (3 |blue) (4 |#ff0) (5 |#f0f) (6 |#0ff) (_ |black)
@@ -326,7 +326,7 @@
             [] (:p0 shape) (:p1 shape) (:p2 shape)
           :examples $ []
           :schema $ quote $ Fn app.schema/Shape
-            -> $ List $ List Number
+            -> $ Tuple (List Number) (List Number) (List Number)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.landscape
           :require
@@ -366,7 +366,7 @@
                 reset! *store next
             , &unit
           :examples $ []
-          :schema $ quote $ Fn schema/Op (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn schema/Op (-> Unit) (:features :js-ffi :state)
         'canvas $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def canvas
             .unwrap $ query-selector |canvas
@@ -385,7 +385,7 @@
                 js/console.warn "|unknown scene op" op
             , &unit
           :examples $ []
-          :schema $ quote $ Fn Operation Payload (-> Unit) (:generics Operation Payload) (:features :js-ffi)
+          :schema $ quote $ Fn Operation Payload (-> Unit) (:generics Operation Payload) (:features :js-ffi :state)
         'dispatch-view! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dispatch-view! (raw)
             match (try-decode-map-as raw schema/Op)
@@ -398,7 +398,7 @@
                       decode-map-as data $ Map Tag Bool
                   _ $ raise |expected-respo-action
           :examples $ []
-          :schema $ quote $ Fn Raw (-> Unit) (:generics Raw)
+          :schema $ quote $ Fn Raw (-> Unit) (:generics Raw) (:features :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! ()
             if dev? $ load-console-formatter!
@@ -419,7 +419,7 @@
             setup-mouse-events! canvas
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi :state)
         'mount-target $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def mount-target
             .unwrap $ respo-browser/query-selector |.controller
@@ -438,7 +438,7 @@
               hud! |error build-errors
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit) (:features :js-ffi)
+          :schema $ quote $ Fn (-> Unit) (:features :js-ffi :state)
         'render-app! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-app! ()
             load-objects! (comp-container @*store) dispatch!
@@ -448,7 +448,7 @@
               , dispatch-view!
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :state)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.main
           :require (|./calcit.build-errors :default build-errors) (|bottom-tip :default hud!)
