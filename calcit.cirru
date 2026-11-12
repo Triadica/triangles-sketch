@@ -25,15 +25,15 @@
                       comp-drag-point
                         {} $ :position $ :p0 focused
                         fn (p d!)
-                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p0 :position p
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point (app.schema/VertexSlot :p0) :position p
                       comp-drag-point
                         {} $ :position $ :p1 focused
                         fn (p d!)
-                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p1 :position p
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point (app.schema/VertexSlot :p1) :position p
                       comp-drag-point
                         {} $ :position $ :p2 focused
                         fn (p d!)
-                          d! :move-point $ app.schema/MovePoint :id focused-id :point :p2 :position p
+                          d! :move-point $ app.schema/MovePoint :id focused-id :point (app.schema/VertexSlot :p2) :position p
                       comp-hint-line focused
           :examples $ []
           :schema $ quote $ Fn app.schema/Store
@@ -475,7 +475,7 @@
           :examples $ []
           :schema $ quote UnionDef
         'MovePoint $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defstruct MovePoint (:id String) (:point Tag)
+          :code $ quote $ defstruct MovePoint (:id String) (:point VertexSlot)
             :position $ List Number
           :examples $ []
           :schema $ quote StructDef
@@ -514,6 +514,10 @@
             :current-focus $ Option String
           :examples $ []
           :schema $ quote StructDef
+        'VertexSlot $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defenum VertexSlot (:p0) (:p1) (:p2)
+          :examples $ []
+          :schema $ quote EnumDef
         'shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def shape
             Shape :p0 ([] 0 0 0) :p1 ([] 0 0 0) :p2 ([] 0 0 0) :color-type 0 :name (Some |) :id None :index 0
@@ -565,10 +569,9 @@
                     shape $ .unwrap $ get shapes id
                     position $ :position change
                     next $ match (:point change)
-                      :p0 $ assoc shape :p0 position
-                      :p1 $ assoc shape :p1 position
-                      :p2 $ assoc shape :p2 position
-                      _ $ raise |unknown-shape-point
+                      (:p0) (assoc shape :p0 position)
+                      (:p1) (assoc shape :p1 position)
+                      (:p2) (assoc shape :p2 position)
                   assoc store :shapes $ assoc shapes id next
               (:delete-shape id)
                 assoc store :shapes $ dissoc (:shapes store) id
@@ -583,6 +586,26 @@
                 assoc store :current-focus $ Some id
           :examples $ []
           :schema $ quote $ Fn schema/Store schema/Op String (-> schema/Store)
+          :tests $ [] $ %{} 'TestEntry (:name |moves-each-vertex-independently)
+            :code $ quote $ let
+                initial $ updater schema/store (schema/Op :new-shape schema/shape) |triangle
+                move $ fn (db slot point)
+                  hint-fn $ Fn schema/Store schema/VertexSlot (List Number) (-> schema/Store)
+                  updater db
+                    schema/Op :move-point $ schema/MovePoint :id |triangle :point slot :position point
+                    , |drag
+                p0 $ [] 1 2 3
+                p1 $ [] 4 5 6
+                p2 $ [] 7 8 9
+                after-p0 $ move initial (schema/VertexSlot :p0) p0
+                next $ move after-p0 (schema/VertexSlot :p1) p1
+                final $ move next (schema/VertexSlot :p2) p2
+                expected $ -> schema/shape
+                  assoc :id $ Some |triangle
+                  assoc :p0 p0
+                  assoc :p1 p1
+                  assoc :p2 p2
+              assert= (Some expected) (focused-shape final)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.updater
           :require
