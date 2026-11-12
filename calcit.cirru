@@ -41,13 +41,15 @@
             :features :js-ffi
         'comp-hint-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-hint-line (shape)
-            object $ {} (:draw-mode :line-loop)
-              :vertex-shader $ inline-shader |line.vert
-              :fragment-shader $ inline-shader |line.frag
-              :points $ []
-                &v+ (:p0 shape) ([] 0 2 0)
-                &v+ (:p1 shape) ([] 0 2 0)
-                &v+ (:p2 shape) ([] 0 2 0)
+            object $ assert-type
+              {} (:draw-mode :line-loop)
+                :vertex-shader $ inline-shader |line.vert
+                :fragment-shader $ inline-shader |line.frag
+                :points $ []
+                  &v+ (:p0 shape) ([] 0 2 0)
+                  &v+ (:p1 shape) ([] 0 2 0)
+                  &v+ (:p2 shape) ([] 0 2 0)
+              Map Tag app.schema/MeshField
           :examples $ []
           :schema $ quote $ Fn app.schema/Shape
             -> $ Map Tag Dynamic
@@ -296,11 +298,13 @@
               group $ {}
               let
                   shape-list $ .to-list $ .distinct-values shapes
-                object $ {} (:draw-mode :triangles)
-                  :vertex-shader $ inline-shader |shape.vert
-                  :fragment-shader $ inline-shader |shape.frag
-                  :points $ landscape-vertices shape-list
-                  :attributes $ {} $ :color_index (landscape-colors shape-list)
+                object $ assert-type
+                  {} (:draw-mode :triangles)
+                    :vertex-shader $ inline-shader |shape.vert
+                    :fragment-shader $ inline-shader |shape.frag
+                    :points $ landscape-vertices shape-list
+                    :attributes $ {} $ :color_index (landscape-colors shape-list)
+                  Map Tag app.schema/MeshField
           :examples $ []
           :schema $ quote $ Fn (Map String app.schema/Shape)
             -> $ Map Tag Dynamic
@@ -472,6 +476,12 @@
           :schema $ quote StructDef
         'ControlNode $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defunion ControlNode Bool (Map respo.schema/CoordKey ControlNode)
+          :examples $ []
+          :schema $ quote UnionDef
+        'MeshField $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion MeshField Tag String
+            List $ List Number
+            Map Tag $ List Number
           :examples $ []
           :schema $ quote UnionDef
         'MovePoint $ %{} 'CodeEntry (:doc |)
