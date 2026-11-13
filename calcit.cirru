@@ -41,18 +41,22 @@
             :features :js-ffi
         'comp-hint-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-hint-line (shape)
-            object $ assert-type
-              {} (:draw-mode :line-loop)
-                :vertex-shader $ inline-shader |line.vert
-                :fragment-shader $ inline-shader |line.frag
-                :points $ []
-                  &v+ (:p0 shape) ([] 0 2 0)
-                  &v+ (:p1 shape) ([] 0 2 0)
-                  &v+ (:p2 shape) ([] 0 2 0)
-              Map Tag app.schema/MeshField
+            object $ hint-line-options shape
           :examples $ []
           :schema $ quote $ Fn app.schema/Shape
             -> $ Map Tag Dynamic
+        'hint-line-options $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn hint-line-options (shape)
+            {} (:draw-mode :line-loop)
+              :vertex-shader $ inline-shader |line.vert
+              :fragment-shader $ inline-shader |line.frag
+              :points $ []
+                &v+ (:p0 shape) ([] 0 2 0)
+                &v+ (:p1 shape) ([] 0 2 0)
+                &v+ (:p2 shape) ([] 0 2 0)
+          :examples $ []
+          :schema $ quote $ Fn app.schema/Shape
+            -> $ Map Tag app.schema/MeshField
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns app.comp.container
           :require
@@ -303,13 +307,7 @@
               group $ {}
               let
                   shape-list $ .to-list $ .distinct-values shapes
-                object $ assert-type
-                  {} (:draw-mode :triangles)
-                    :vertex-shader $ inline-shader |shape.vert
-                    :fragment-shader $ inline-shader |shape.frag
-                    :points $ landscape-vertices shape-list
-                    :attributes $ {} $ :color_index (landscape-colors shape-list)
-                  Map Tag app.schema/MeshField
+                object $ landscape-options shape-list
           :examples $ []
           :schema $ quote $ Fn (Map String app.schema/Shape)
             -> $ Map Tag Dynamic
@@ -320,6 +318,16 @@
           :examples $ []
           :schema $ quote $ Fn (List app.schema/Shape)
             -> $ List Number
+        'landscape-options $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn landscape-options (shape-list)
+            {} (:draw-mode :triangles)
+              :vertex-shader $ inline-shader |shape.vert
+              :fragment-shader $ inline-shader |shape.frag
+              :points $ landscape-vertices shape-list
+              :attributes $ {} $ :color_index (landscape-colors shape-list)
+          :examples $ []
+          :schema $ quote $ Fn (List app.schema/Shape)
+            -> $ Map Tag app.schema/MeshField
         'landscape-vertices $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn landscape-vertices (shape-list)
             concat & $ map shape-list shape-vertices
