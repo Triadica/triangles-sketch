@@ -69,10 +69,15 @@
           :code $ quote $ defref *index-cache 0
           :examples $ []
           :schema $ quote $ Ref Number
+        'MenuItem $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defenum MenuItem (:item Tag String)
+          :examples $ []
+          :schema $ quote EnumDef
         'actions $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def actions
-            [] $ :: :item :delete |DELETE
+            [] $ MenuItem :item :delete |DELETE
           :examples $ []
+          :schema $ quote $ List MenuItem
         'assemble-new-shape $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn assemble-new-shape (color-type)
             let
