@@ -8,9 +8,9 @@
 
 https://github.com/Triadica/triadica-workflow
 
-### Calcit 0.43.0 使用说明
+### Calcit 0.44.0 使用说明
 
-请同时使用正式 Calcit 与 `@calcit/procs` 0.43.0，配套 Space 0.0.52、
+请同时使用正式 Calcit 与 `@calcit/procs` 0.44.0，配套 Space 0.0.52、
 Touch Control 0.0.41、Respo 0.19.11、UI 0.15.5、Alerts 0.14.6 和 JS FFI 0.2.18。
 重装依赖并重新生成 JS。原画布、形状控件、颜色与删除弹窗的操作方式沿用原版。
 
