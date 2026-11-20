@@ -1,4 +1,4 @@
-{} (:calcit-version |0.43.0) (:version |0.0.1)
+{} (:calcit-version |0.44.0) (:version |0.0.1)
   :dependencies $ {}
     |Triadica/triadica-space |0.0.52
     |Triadica/touch-control |0.0.41
