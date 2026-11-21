@@ -38,7 +38,7 @@
           :examples $ []
           :schema $ quote $ Fn app.schema/Store
             -> $ Map Tag Dynamic
-            :features :js-ffi :state
+            :features :io :js-ffi :state
         'comp-hint-line $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn comp-hint-line (shape)
             object $ hint-line-options shape
