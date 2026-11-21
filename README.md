@@ -10,12 +10,14 @@ https://github.com/Triadica/triadica-workflow
 
 ### Calcit 0.44.0 使用说明
 
-请同时使用正式 Calcit 与 `@calcit/procs` 0.44.0，配套 Space 0.0.52、
-Touch Control 0.0.41、Respo 0.19.11、UI 0.15.5、Alerts 0.14.6 和 JS FFI 0.2.18。
+请同时使用正式 Calcit 与 `@calcit/procs` 0.44.0，配套 Space 0.0.53、
+Touch Control 0.0.43、Respo 0.19.13、UI 0.15.7、Alerts 0.14.8 和 JS FFI 0.2.19。
 重装依赖并重新生成 JS。原画布、形状控件、颜色与删除弹窗的操作方式沿用原版。
 
 新增业务操作时使用具名 `Op`。Space 的双参数回调仍接收拖点和游标事件，
 Alerts 发出的旧状态事件在 Respo 入口解码后使用同一状态更新逻辑。
+Space 的坐标轴可能触发 Quaternion 零向量诊断，因此容器类型如实声明 `:io`；
+原绘图和状态逻辑未改变。
 
 ### 历史：Calcit 0.32.1
 
